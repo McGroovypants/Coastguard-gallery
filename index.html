@@ -354,7 +354,7 @@ document.getElementById("accessCode").addEventListener("keydown", function(e) {
 const CLOUDINARY_CLOUD = "deyb4o5qz";
 function cloudinaryThumb(url, width) {
   width = width || 400;
-  return "https://res.cloudinary.com/" + CLOUDINARY_CLOUD + "/image/fetch/w_" + width + ",q_auto,f_auto/" + encodeURIComponent(url);
+  return "https://res.cloudinary.com/" + CLOUDINARY_CLOUD + "/image/fetch/w_" + width + ",q_auto,f_auto/" + url;
 }
 
 function renderCategories() {
