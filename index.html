@@ -80,20 +80,23 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
 
 @media (max-width: 600px) {
   /* LOGIN: stack logos vertically, Coastguard first */
-  .login-logos { flex-direction: column-reverse; gap: 12px; }
+  .login-logos { flex-direction: column-reverse; gap: 10px; }
   .login-divider { width: 50px; height: 2px; }
-  .login-logos img { height: 50px; }
-  .logo-bg { padding: 10px 16px; }
-  .login-title { font-size: 24px; }
+  .login-logos img { height: 44px; }
+  .logo-bg { padding: 8px 14px; }
+  .login-title { font-size: 22px; }
+  .login-box { padding: 24px 20px; }
+  .login-box input { padding: 10px; font-size: 16px; }
 
-  /* HEADER: stack logos vertically, smaller */
-  .header { flex-direction: column; gap: 10px; padding: 12px 16px; }
-  .header-logos { flex-direction: column-reverse; gap: 6px; }
+  /* HEADER: compact side-by-side logos for mobile */
+  .header { flex-direction: column; gap: 6px; padding: 8px 12px; }
+  .header-logos { flex-direction: row; gap: 8px; }
   .header-divider { display: none; }
-  .header-logos img { height: 30px; }
-  .header-logo-bg { padding: 4px 8px; }
+  .header-logos img { height: 24px; }
+  .header-logo-bg { padding: 3px 6px; border-radius: 6px; }
   .header-right { text-align: center; }
-  .header-title { font-size: 15px; }
+  .header-title { font-size: 13px; }
+  .header-credit { font-size: 10px; }
 
   /* GALLERY NAV: full width back + download row */
   .gallery-nav { flex-direction: column; gap: 8px; align-items: stretch; }
