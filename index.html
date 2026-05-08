@@ -79,10 +79,37 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
 .hidden { display: none !important; }
 
 @media (max-width: 600px) {
-  .login-logos { gap: 16px; }
+  /* LOGIN: stack logos vertically, Coastguard first */
+  .login-logos { flex-direction: column-reverse; gap: 12px; }
+  .login-divider { width: 50px; height: 2px; }
   .login-logos img { height: 50px; }
+  .logo-bg { padding: 10px 16px; }
+  .login-title { font-size: 24px; }
+
+  /* HEADER: stack logos vertically, smaller */
+  .header { flex-direction: column; gap: 10px; padding: 12px 16px; }
+  .header-logos { flex-direction: column-reverse; gap: 6px; }
+  .header-divider { display: none; }
+  .header-logos img { height: 30px; }
+  .header-logo-bg { padding: 4px 8px; }
+  .header-right { text-align: center; }
+  .header-title { font-size: 15px; }
+
+  /* GALLERY NAV: full width back + download row */
+  .gallery-nav { flex-direction: column; gap: 8px; align-items: stretch; }
+  .gallery-nav .back-btn { align-self: flex-start; }
+
+  /* GRIDS */
   .cat-grid { grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); }
   .photo-grid { grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); }
+
+  /* LIGHTBOX: larger close button, better positioning */
+  .lightbox-close { top: 12px; right: 12px; font-size: 36px; padding: 8px; background: rgba(0,0,0,0.6); border-radius: 50%; width: 48px; height: 48px; display: flex; align-items: center; justify-content: center; }
+  .lightbox-nav { padding: 8px 12px; font-size: 28px; }
+  .lightbox-nav.prev { left: 8px; }
+  .lightbox-nav.next { right: 8px; }
+  .lightbox img { max-width: 95vw; max-height: 70vh; }
+  .lightbox-info { bottom: 12px; font-size: 12px; left: 10px; right: 10px; }
 }
 </style>
 </head>
@@ -445,6 +472,17 @@ document.addEventListener("keydown", function(e) {
 
 document.getElementById("lightbox").addEventListener("click", function(e) {
   if (e.target === this) closeLightbox();
+});
+
+// Touch swipe support for lightbox
+let touchStartX = 0;
+let touchEndX = 0;
+const lb = document.getElementById("lightbox");
+lb.addEventListener("touchstart", function(e) { touchStartX = e.changedTouches[0].screenX; }, {passive: true});
+lb.addEventListener("touchend", function(e) {
+  touchEndX = e.changedTouches[0].screenX;
+  const diff = touchStartX - touchEndX;
+  if (Math.abs(diff) > 50) { diff > 0 ? navLightbox(1) : navLightbox(-1); }
 });
 </script>
 </body>
