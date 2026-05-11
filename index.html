@@ -3,6 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="referrer" content="no-referrer">
+<meta http-equiv="X-Content-Type-Options" content="nosniff">
+<meta http-equiv="Permissions-Policy" content="camera=(), microphone=(), geolocation=()">
 <title>Coastguard 2026 Photo Gallery</title>
 <style>
 * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -40,12 +43,9 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
 .cat-card { background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; overflow: hidden; text-align: center; cursor: pointer; transition: all 0.2s; }
 .cat-card:hover { background: rgba(255,255,255,0.1); border-color: #e63329; transform: translateY(-2px); }
 .cat-card.active { border-color: #e63329; background: rgba(230,51,41,0.1); }
-.cat-thumb { width: 100%; aspect-ratio: 16/10; overflow: hidden; }
-.cat-thumb img { width: 100%; height: 100%; object-fit: cover; }
 .cat-thumb-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2px; aspect-ratio: 16/10; overflow: hidden; }
 .cat-thumb-grid img { width: 100%; height: 100%; object-fit: cover; }
 .cat-card-team .cat-thumb-grid img { object-position: top; }
-.cat-icon { font-size: 36px; padding-top: 24px; margin-bottom: 10px; }
 .cat-label { font-size: 16px; font-weight: 600; padding: 12px 12px 4px; }
 .cat-count { font-size: 13px; color: rgba(255,255,255,0.5); padding: 0 12px 16px; }
 
@@ -56,6 +56,7 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
 .back-btn:hover { background: rgba(255,255,255,0.1); }
 .download-btn { background: #e63329; border-color: #e63329; }
 .download-btn:hover { background: #c42a22; }
+.download-btn:disabled { opacity: 0.6; cursor: not-allowed; }
 
 /* PHOTO GRID */
 .photo-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 12px; }
@@ -64,7 +65,6 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
 .photo-grid.team-shots .photo-thumb { aspect-ratio: 3/4; }
 .photo-grid.team-shots .photo-thumb img { object-position: top; }
 .photo-thumb:hover img { transform: scale(1.05); }
-.photo-thumb .loading { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; color: rgba(255,255,255,0.3); font-size: 13px; }
 
 /* LIGHTBOX */
 .lightbox { position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 1000; display: none; align-items: center; justify-content: center; flex-direction: column; }
@@ -76,10 +76,18 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
 .lightbox-nav.next { right: 16px; }
 .lightbox-info { position: absolute; bottom: 20px; text-align: center; color: rgba(255,255,255,0.7); font-size: 14px; }
 .lightbox-download { display: inline-block; margin-top: 8px; padding: 6px 14px; background: #e63329; color: #fff; text-decoration: none; border-radius: 6px; font-size: 13px; }
+.lightbox-download:hover { background: #c42a22; }
+
+/* ZIP PROGRESS */
+.zip-progress { display: none; align-items: center; gap: 10px; margin-left: 8px; }
+.zip-progress.active { display: inline-flex; }
+.zip-bar { width: 120px; height: 8px; background: rgba(255,255,255,0.15); border-radius: 4px; overflow: hidden; }
+.zip-bar-fill { height: 100%; background: #e63329; border-radius: 4px; transition: width 0.2s; width: 0%; }
+.zip-text { font-size: 12px; color: rgba(255,255,255,0.6); }
+
 .hidden { display: none !important; }
 
 @media (max-width: 600px) {
-  /* LOGIN: stack logos vertically, Coastguard first */
   .login-logos { flex-direction: column; gap: 10px; }
   .login-divider { width: 50px; height: 2px; }
   .login-logos img { height: 44px; }
@@ -87,8 +95,6 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
   .login-title { font-size: 22px; }
   .login-box { padding: 24px 20px; }
   .login-box input { padding: 10px; font-size: 16px; }
-
-  /* HEADER: compact side-by-side logos for mobile */
   .header { flex-direction: column; gap: 6px; padding: 8px 12px; }
   .header-logos { flex-direction: row; gap: 8px; }
   .header-divider { display: none; }
@@ -97,16 +103,8 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
   .header-right { text-align: center; }
   .header-title { font-size: 13px; }
   .header-credit { font-size: 10px; }
-
-  /* GALLERY NAV: full width back + download row */
-  .gallery-nav { flex-direction: column; gap: 8px; align-items: stretch; }
-  .gallery-nav .back-btn { align-self: flex-start; }
-
-  /* GRIDS */
   .cat-grid { grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); }
   .photo-grid { grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); }
-
-  /* LIGHTBOX: larger close button, better positioning */
   .lightbox-close { top: 12px; right: 12px; font-size: 36px; padding: 8px; background: rgba(0,0,0,0.6); border-radius: 50%; width: 48px; height: 48px; display: flex; align-items: center; justify-content: center; }
   .lightbox-nav { padding: 8px 12px; font-size: 28px; }
   .lightbox-nav.prev { left: 8px; }
@@ -129,7 +127,7 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
   <div class="login-subtitle">Photo Gallery</div>
   <div class="login-box">
     <label for="accessCode">Access Code</label>
-    <input type="password" id="accessCode" autocomplete="off">
+    <input type="text" id="accessCode" autocomplete="off" spellcheck="false">
     <button onclick="tryLogin()">Enter Gallery</button>
     <div id="loginError" class="login-error">Incorrect access code. Please try again.</div>
   </div>
@@ -155,11 +153,17 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
     </div>
     <div id="photoView" class="hidden">
       <div class="gallery-bar">
-        <div style="display:flex; align-items:center; gap:12px;">
+        <div style="display:flex; align-items:center; gap:12px; flex-wrap:wrap;">
           <button class="back-btn" onclick="showCategories()">&#8592; Back</button>
           <h2 id="photoViewTitle"></h2>
         </div>
-        <a id="folderDownloadBtn" class="download-btn" target="_blank">&#8595; Download All from Dropbox</a>
+        <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+          <button id="folderDownloadBtn" class="download-btn" onclick="downloadFolder()">&#8595; Download All Photos</button>
+          <div id="zipProgress" class="zip-progress">
+            <div class="zip-bar"><div id="zipBarFill" class="zip-bar-fill"></div></div>
+            <span id="zipText" class="zip-text">0%</span>
+          </div>
+        </div>
       </div>
       <div id="photoGrid" class="photo-grid"></div>
     </div>
@@ -175,318 +179,485 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
   <div class="lightbox-info">
     <div id="lightboxCaption"></div>
     <div id="lightboxCounter"></div>
-    <a id="lightboxDownload" class="lightbox-download" target="_blank">&#8595; Download</a>
+    <a id="lightboxDownload" class="lightbox-download" target="_blank">&#8595; Save Photo</a>
   </div>
 </div>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
 <script>
+// Access code hash (SHA-256)
+const CODE_HASH = "84ddf86a17953e4eb66777ff786b58d162cc54c9db05e85fa82b332782502b37";
+
 const photoData = {
     boats_on_water: [
-      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/v1778210178/Screenshot_2026-05-07_at_10.49.37_AM_nztnic.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/v1778210178/Screenshot_2026-05-07_at_10.49.37_AM_nztnic.jpg", name: "Screenshot 2026-05-07 at 10.49.37 AM.jpg" },
-      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/v1778210179/Screenshot_2026-05-07_at_10.49.44_AM_dwzydh.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/v1778210179/Screenshot_2026-05-07_at_10.49.44_AM_dwzydh.jpg", name: "Screenshot 2026-05-07 at 10.49.44 AM.jpg" },
-      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/v1778210179/Screenshot_2026-05-07_at_10.49.51_AM_kwk1x3.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/v1778210179/Screenshot_2026-05-07_at_10.49.51_AM_kwk1x3.jpg", name: "Screenshot 2026-05-07 at 10.49.51 AM.jpg" },
-      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/v1778210181/Screenshot_2026-05-07_at_10.49.58_AM_fyc4f8.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/v1778210181/Screenshot_2026-05-07_at_10.49.58_AM_fyc4f8.jpg", name: "Screenshot 2026-05-07 at 10.49.58 AM.jpg" },
-      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/v1778210184/Screenshot_2026-05-07_at_10.50.10_AM_warwwy.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/v1778210184/Screenshot_2026-05-07_at_10.50.10_AM_warwwy.jpg", name: "Screenshot 2026-05-07 at 10.50.10 AM.jpg" },
-      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/v1778210184/Screenshot_2026-05-07_at_10.50.20_AM_h9vdlt.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/v1778210184/Screenshot_2026-05-07_at_10.50.20_AM_h9vdlt.jpg", name: "Screenshot 2026-05-07 at 10.50.20 AM.jpg" },
-      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/v1778210185/Screenshot_2026-05-07_at_10.50.27_AM_igq6n3.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/v1778210185/Screenshot_2026-05-07_at_10.50.27_AM_igq6n3.jpg", name: "Screenshot 2026-05-07 at 10.50.27 AM.jpg" },
-      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/v1778210188/Screenshot_2026-05-08_at_7.56.27_AM_k3wjvk.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/v1778210188/Screenshot_2026-05-08_at_7.56.27_AM_k3wjvk.jpg", name: "Screenshot 2026-05-08 at 7.56.27 AM.jpg" },
-      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/v1778210189/Screenshot_2026-05-08_at_7.56.37_AM_txthfo.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/v1778210189/Screenshot_2026-05-08_at_7.56.37_AM_txthfo.jpg", name: "Screenshot 2026-05-08 at 7.56.37 AM.jpg" },
-      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/v1778210192/Screenshot_2026-05-08_at_7.56.43_AM_e7qelg.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/v1778210192/Screenshot_2026-05-08_at_7.56.43_AM_e7qelg.jpg", name: "Screenshot 2026-05-08 at 7.56.43 AM.jpg" },
-      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/v1778210192/Screenshot_2026-05-08_at_7.56.56_AM_ahhw1m.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/v1778210192/Screenshot_2026-05-08_at_7.56.56_AM_ahhw1m.jpg", name: "Screenshot 2026-05-08 at 7.56.56 AM.jpg" },
-      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/v1778210194/Screenshot_2026-05-08_at_7.57.14_AM_ntdpwm.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/v1778210194/Screenshot_2026-05-08_at_7.57.14_AM_ntdpwm.jpg", name: "Screenshot 2026-05-08 at 7.57.14 AM.jpg" },
-      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/v1778210196/Screenshot_2026-05-08_at_7.57.22_AM_km6spd.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/v1778210196/Screenshot_2026-05-08_at_7.57.22_AM_km6spd.jpg", name: "Screenshot 2026-05-08 at 7.57.22 AM.jpg" },
-      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/v1778210198/Screenshot_2026-05-08_at_7.57.39_AM_zykof5.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/v1778210198/Screenshot_2026-05-08_at_7.57.39_AM_zykof5.jpg", name: "Screenshot 2026-05-08 at 7.57.39 AM.jpg" },
-      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/v1778210200/Screenshot_2026-05-08_at_7.57.56_AM_cwasxy.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/v1778210200/Screenshot_2026-05-08_at_7.57.56_AM_cwasxy.jpg", name: "Screenshot 2026-05-08 at 7.57.56 AM.jpg" },
-      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/v1778210202/Screenshot_2026-05-08_at_7.58.03_AM_ud1rvw.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/v1778210202/Screenshot_2026-05-08_at_7.58.03_AM_ud1rvw.jpg", name: "Screenshot 2026-05-08 at 7.58.03 AM.jpg" },
-      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/v1778210204/Screenshot_2026-05-08_at_7.58.22_AM_ypixxh.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/v1778210204/Screenshot_2026-05-08_at_7.58.22_AM_ypixxh.jpg", name: "Screenshot 2026-05-08 at 7.58.22 AM.jpg" },
-      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/v1778210206/Screenshot_2026-05-08_at_7.58.36_AM_zjd6oy.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/v1778210206/Screenshot_2026-05-08_at_7.58.36_AM_zjd6oy.jpg", name: "Screenshot 2026-05-08 at 7.58.36 AM.jpg" },
-      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/v1778210209/Screenshot_2026-05-08_at_7.58.42_AM_aoocyb.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/v1778210209/Screenshot_2026-05-08_at_7.58.42_AM_aoocyb.jpg", name: "Screenshot 2026-05-08 at 7.58.42 AM.jpg" },
-      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/v1778210211/Screenshot_2026-05-08_at_7.59.14_AM_pgikoq.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/v1778210211/Screenshot_2026-05-08_at_7.59.14_AM_pgikoq.jpg", name: "Screenshot 2026-05-08 at 7.59.14 AM.jpg" },
-      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/v1778210212/Screenshot_2026-05-08_at_7.59.25_AM_ofqojh.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/v1778210212/Screenshot_2026-05-08_at_7.59.25_AM_ofqojh.jpg", name: "Screenshot 2026-05-08 at 7.59.25 AM.jpg" },
-      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/v1778210217/Screenshot_2026-05-08_at_7.59.38_AM_qiwdjm.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/v1778210217/Screenshot_2026-05-08_at_7.59.38_AM_qiwdjm.jpg", name: "Screenshot 2026-05-08 at 7.59.38 AM.jpg" },
-      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/v1778210217/Screenshot_2026-05-08_at_7.59.58_AM_btgdpe.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/v1778210217/Screenshot_2026-05-08_at_7.59.58_AM_btgdpe.jpg", name: "Screenshot 2026-05-08 at 7.59.58 AM.jpg" },
-      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/v1778210218/Screenshot_2026-05-08_at_8.00.09_AM_xrkrhe.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/v1778210218/Screenshot_2026-05-08_at_8.00.09_AM_xrkrhe.jpg", name: "Screenshot 2026-05-08 at 8.00.09 AM.jpg" },
-      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/v1778210224/Screenshot_2026-05-08_at_8.00.25_AM_fjinte.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/v1778210224/Screenshot_2026-05-08_at_8.00.25_AM_fjinte.jpg", name: "Screenshot 2026-05-08 at 8.00.25 AM.jpg" },
-      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/v1778210224/Screenshot_2026-05-08_at_8.00.31_AM_iilugc.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/v1778210224/Screenshot_2026-05-08_at_8.00.31_AM_iilugc.jpg", name: "Screenshot 2026-05-08 at 8.00.31 AM.jpg" }
+      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/Screenshot_2026-05-11_at_8.24.28_AM_zao831.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/Screenshot_2026-05-11_at_8.24.28_AM_zao831.jpg", name: "Screenshot_2026-05-11_at_8.24.28_AM_zao831.jpg" },
+      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/Screenshot_2026-05-11_at_8.24.39_AM_pxez2j.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/Screenshot_2026-05-11_at_8.24.39_AM_pxez2j.jpg", name: "Screenshot_2026-05-11_at_8.24.39_AM_pxez2j.jpg" },
+      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/Screenshot_2026-05-11_at_8.38.14_AM_tmx7i5.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/Screenshot_2026-05-11_at_8.38.14_AM_tmx7i5.jpg", name: "Screenshot_2026-05-11_at_8.38.14_AM_tmx7i5.jpg" },
+      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/Screenshot_2026-05-11_at_8.21.22_AM_q5go5v.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/Screenshot_2026-05-11_at_8.21.22_AM_q5go5v.jpg", name: "Screenshot_2026-05-11_at_8.21.22_AM_q5go5v.jpg" },
+      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/Screenshot_2026-05-11_at_8.38.00_AM_pmecsj.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/Screenshot_2026-05-11_at_8.38.00_AM_pmecsj.jpg", name: "Screenshot_2026-05-11_at_8.38.00_AM_pmecsj.jpg" },
+      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/Screenshot_2026-05-11_at_8.37.12_AM_kvu3yz.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/Screenshot_2026-05-11_at_8.37.12_AM_kvu3yz.jpg", name: "Screenshot_2026-05-11_at_8.37.12_AM_kvu3yz.jpg" },
+      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/Screenshot_2026-05-11_at_8.37.30_AM_rco9ee.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/Screenshot_2026-05-11_at_8.37.30_AM_rco9ee.jpg", name: "Screenshot_2026-05-11_at_8.37.30_AM_rco9ee.jpg" },
+      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/Screenshot_2026-05-11_at_8.38.04_AM_bc0rog.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/Screenshot_2026-05-11_at_8.38.04_AM_bc0rog.jpg", name: "Screenshot_2026-05-11_at_8.38.04_AM_bc0rog.jpg" },
+      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/Screenshot_2026-05-11_at_8.23.39_AM_rfvpbt.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/Screenshot_2026-05-11_at_8.23.39_AM_rfvpbt.jpg", name: "Screenshot_2026-05-11_at_8.23.39_AM_rfvpbt.jpg" },
+      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/Screenshot_2026-05-11_at_8.21.31_AM_apglhh.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/Screenshot_2026-05-11_at_8.21.31_AM_apglhh.jpg", name: "Screenshot_2026-05-11_at_8.21.31_AM_apglhh.jpg" },
+      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/Screenshot_2026-05-11_at_8.23.57_AM_nz51cx.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/Screenshot_2026-05-11_at_8.23.57_AM_nz51cx.jpg", name: "Screenshot_2026-05-11_at_8.23.57_AM_nz51cx.jpg" },
+      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/Screenshot_2026-05-11_at_8.37.51_AM_nkyusw.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/Screenshot_2026-05-11_at_8.37.51_AM_nkyusw.jpg", name: "Screenshot_2026-05-11_at_8.37.51_AM_nkyusw.jpg" },
+      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/Screenshot_2026-05-11_at_9.02.26_AM_fe8pkj.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/Screenshot_2026-05-11_at_9.02.26_AM_fe8pkj.jpg", name: "Screenshot_2026-05-11_at_9.02.26_AM_fe8pkj.jpg" },
+      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/Screenshot_2026-05-11_at_8.24.53_AM_uk6gh5.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/Screenshot_2026-05-11_at_8.24.53_AM_uk6gh5.jpg", name: "Screenshot_2026-05-11_at_8.24.53_AM_uk6gh5.jpg" },
+      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/Screenshot_2026-05-11_at_8.17.31_AM_qzom1v.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/Screenshot_2026-05-11_at_8.17.31_AM_qzom1v.jpg", name: "Screenshot_2026-05-11_at_8.17.31_AM_qzom1v.jpg" },
+      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/Screenshot_2026-05-11_at_8.58.24_AM_mx7twd.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/Screenshot_2026-05-11_at_8.58.24_AM_mx7twd.jpg", name: "Screenshot_2026-05-11_at_8.58.24_AM_mx7twd.jpg" },
+      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/Screenshot_2026-05-11_at_8.59.54_AM_qzgchl.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/Screenshot_2026-05-11_at_8.59.54_AM_qzgchl.jpg", name: "Screenshot_2026-05-11_at_8.59.54_AM_qzgchl.jpg" },
+      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/Screenshot_2026-05-11_at_8.58.38_AM_vcodve.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/Screenshot_2026-05-11_at_8.58.38_AM_vcodve.jpg", name: "Screenshot_2026-05-11_at_8.58.38_AM_vcodve.jpg" },
+      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/Screenshot_2026-05-11_at_8.58.31_AM_xw8wev.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/Screenshot_2026-05-11_at_8.58.31_AM_xw8wev.jpg", name: "Screenshot_2026-05-11_at_8.58.31_AM_xw8wev.jpg" },
+      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/Screenshot_2026-05-11_at_8.24.18_AM_sptbpe.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/Screenshot_2026-05-11_at_8.24.18_AM_sptbpe.jpg", name: "Screenshot_2026-05-11_at_8.24.18_AM_sptbpe.jpg" },
+      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/Screenshot_2026-05-11_at_8.17.00_AM_bhldvi.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/Screenshot_2026-05-11_at_8.17.00_AM_bhldvi.jpg", name: "Screenshot_2026-05-11_at_8.17.00_AM_bhldvi.jpg" },
+      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/Screenshot_2026-05-11_at_8.17.16_AM_kkmrut.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/Screenshot_2026-05-11_at_8.17.16_AM_kkmrut.jpg", name: "Screenshot_2026-05-11_at_8.17.16_AM_kkmrut.jpg" },
+      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/Screenshot_2026-05-11_at_8.17.21_AM_mrvyyz.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/Screenshot_2026-05-11_at_8.17.21_AM_mrvyyz.jpg", name: "Screenshot_2026-05-11_at_8.17.21_AM_mrvyyz.jpg" },
+      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/Screenshot_2026-05-08_at_8.00.25_AM_fjinte.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/Screenshot_2026-05-08_at_8.00.25_AM_fjinte.jpg", name: "Screenshot_2026-05-08_at_8.00.25_AM_fjinte.jpg" },
+      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/Screenshot_2026-05-08_at_8.00.31_AM_iilugc.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/Screenshot_2026-05-08_at_8.00.31_AM_iilugc.jpg", name: "Screenshot_2026-05-08_at_8.00.31_AM_iilugc.jpg" },
+      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/Screenshot_2026-05-08_at_8.00.09_AM_xrkrhe.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/Screenshot_2026-05-08_at_8.00.09_AM_xrkrhe.jpg", name: "Screenshot_2026-05-08_at_8.00.09_AM_xrkrhe.jpg" },
+      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/Screenshot_2026-05-08_at_7.59.38_AM_qiwdjm.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/Screenshot_2026-05-08_at_7.59.38_AM_qiwdjm.jpg", name: "Screenshot_2026-05-08_at_7.59.38_AM_qiwdjm.jpg" },
+      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/Screenshot_2026-05-08_at_7.59.58_AM_btgdpe.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/Screenshot_2026-05-08_at_7.59.58_AM_btgdpe.jpg", name: "Screenshot_2026-05-08_at_7.59.58_AM_btgdpe.jpg" },
+      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/Screenshot_2026-05-08_at_7.59.25_AM_ofqojh.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/Screenshot_2026-05-08_at_7.59.25_AM_ofqojh.jpg", name: "Screenshot_2026-05-08_at_7.59.25_AM_ofqojh.jpg" },
+      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/Screenshot_2026-05-08_at_7.59.14_AM_pgikoq.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/Screenshot_2026-05-08_at_7.59.14_AM_pgikoq.jpg", name: "Screenshot_2026-05-08_at_7.59.14_AM_pgikoq.jpg" },
+      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/Screenshot_2026-05-08_at_7.58.42_AM_aoocyb.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/Screenshot_2026-05-08_at_7.58.42_AM_aoocyb.jpg", name: "Screenshot_2026-05-08_at_7.58.42_AM_aoocyb.jpg" },
+      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/Screenshot_2026-05-08_at_7.58.36_AM_zjd6oy.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/Screenshot_2026-05-08_at_7.58.36_AM_zjd6oy.jpg", name: "Screenshot_2026-05-08_at_7.58.36_AM_zjd6oy.jpg" },
+      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/Screenshot_2026-05-08_at_7.58.22_AM_ypixxh.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/Screenshot_2026-05-08_at_7.58.22_AM_ypixxh.jpg", name: "Screenshot_2026-05-08_at_7.58.22_AM_ypixxh.jpg" },
+      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/Screenshot_2026-05-08_at_7.58.03_AM_ud1rvw.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/Screenshot_2026-05-08_at_7.58.03_AM_ud1rvw.jpg", name: "Screenshot_2026-05-08_at_7.58.03_AM_ud1rvw.jpg" },
+      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/Screenshot_2026-05-08_at_7.57.56_AM_cwasxy.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/Screenshot_2026-05-08_at_7.57.56_AM_cwasxy.jpg", name: "Screenshot_2026-05-08_at_7.57.56_AM_cwasxy.jpg" },
+      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/Screenshot_2026-05-08_at_7.57.39_AM_zykof5.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/Screenshot_2026-05-08_at_7.57.39_AM_zykof5.jpg", name: "Screenshot_2026-05-08_at_7.57.39_AM_zykof5.jpg" },
+      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/Screenshot_2026-05-08_at_7.57.22_AM_km6spd.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/Screenshot_2026-05-08_at_7.57.22_AM_km6spd.jpg", name: "Screenshot_2026-05-08_at_7.57.22_AM_km6spd.jpg" },
+      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/Screenshot_2026-05-08_at_7.57.14_AM_ntdpwm.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/Screenshot_2026-05-08_at_7.57.14_AM_ntdpwm.jpg", name: "Screenshot_2026-05-08_at_7.57.14_AM_ntdpwm.jpg" },
+      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/Screenshot_2026-05-08_at_7.56.43_AM_e7qelg.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/Screenshot_2026-05-08_at_7.56.43_AM_e7qelg.jpg", name: "Screenshot_2026-05-08_at_7.56.43_AM_e7qelg.jpg" },
+      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/Screenshot_2026-05-08_at_7.56.56_AM_ahhw1m.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/Screenshot_2026-05-08_at_7.56.56_AM_ahhw1m.jpg", name: "Screenshot_2026-05-08_at_7.56.56_AM_ahhw1m.jpg" },
+      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/Screenshot_2026-05-08_at_7.56.37_AM_txthfo.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/Screenshot_2026-05-08_at_7.56.37_AM_txthfo.jpg", name: "Screenshot_2026-05-08_at_7.56.37_AM_txthfo.jpg" },
+      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/Screenshot_2026-05-08_at_7.56.27_AM_k3wjvk.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/Screenshot_2026-05-08_at_7.56.27_AM_k3wjvk.jpg", name: "Screenshot_2026-05-08_at_7.56.27_AM_k3wjvk.jpg" },
+      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/Screenshot_2026-05-07_at_10.50.27_AM_igq6n3.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/Screenshot_2026-05-07_at_10.50.27_AM_igq6n3.jpg", name: "Screenshot_2026-05-07_at_10.50.27_AM_igq6n3.jpg" },
+      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/Screenshot_2026-05-07_at_10.50.10_AM_warwwy.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/Screenshot_2026-05-07_at_10.50.10_AM_warwwy.jpg", name: "Screenshot_2026-05-07_at_10.50.10_AM_warwwy.jpg" },
+      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/Screenshot_2026-05-07_at_10.50.20_AM_h9vdlt.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/Screenshot_2026-05-07_at_10.50.20_AM_h9vdlt.jpg", name: "Screenshot_2026-05-07_at_10.50.20_AM_h9vdlt.jpg" },
+      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/Screenshot_2026-05-07_at_10.49.58_AM_fyc4f8.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/Screenshot_2026-05-07_at_10.49.58_AM_fyc4f8.jpg", name: "Screenshot_2026-05-07_at_10.49.58_AM_fyc4f8.jpg" },
+      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/Screenshot_2026-05-07_at_10.49.51_AM_kwk1x3.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/Screenshot_2026-05-07_at_10.49.51_AM_kwk1x3.jpg", name: "Screenshot_2026-05-07_at_10.49.51_AM_kwk1x3.jpg" },
+      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/Screenshot_2026-05-07_at_10.49.44_AM_dwzydh.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/Screenshot_2026-05-07_at_10.49.44_AM_dwzydh.jpg", name: "Screenshot_2026-05-07_at_10.49.44_AM_dwzydh.jpg" },
+      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/Screenshot_2026-05-07_at_10.49.37_AM_nztnic.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/Screenshot_2026-05-07_at_10.49.37_AM_nztnic.jpg", name: "Screenshot_2026-05-07_at_10.49.37_AM_nztnic.jpg" }
+    ],
+    coastguard_vessels: [
+      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/IMG_9605_aejtd8.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/IMG_9605_aejtd8.jpg", name: "IMG_9605_aejtd8.jpg" },
+      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/IMG_9610_znblus.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/IMG_9610_znblus.jpg", name: "IMG_9610_znblus.jpg" },
+      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/IMG_9659_lby6uo.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/IMG_9659_lby6uo.jpg", name: "IMG_9659_lby6uo.jpg" },
+      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/Screenshot_2026-05-11_at_8.18.06_AM_r61pym.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/Screenshot_2026-05-11_at_8.18.06_AM_r61pym.jpg", name: "Screenshot_2026-05-11_at_8.18.06_AM_r61pym.jpg" },
+      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/IMG_9607_sgsqde.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/IMG_9607_sgsqde.jpg", name: "IMG_9607_sgsqde.jpg" },
+      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/IMG_9666_mhbkg4.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/IMG_9666_mhbkg4.jpg", name: "IMG_9666_mhbkg4.jpg" },
+      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/IMG_9651_lfht4t.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/IMG_9651_lfht4t.jpg", name: "IMG_9651_lfht4t.jpg" },
+      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/IMG_9652_ripsz3.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/IMG_9652_ripsz3.jpg", name: "IMG_9652_ripsz3.jpg" },
+      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/IMG_9664_qcszol.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/IMG_9664_qcszol.jpg", name: "IMG_9664_qcszol.jpg" },
+      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/Screenshot_2026-05-11_at_8.25.48_AM_mjlnmq.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/Screenshot_2026-05-11_at_8.25.48_AM_mjlnmq.jpg", name: "Screenshot_2026-05-11_at_8.25.48_AM_mjlnmq.jpg" },
+      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/IMG_9658_w4wufq.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/IMG_9658_w4wufq.jpg", name: "IMG_9658_w4wufq.jpg" },
+      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/IMG_9611_fkldfo.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/IMG_9611_fkldfo.jpg", name: "IMG_9611_fkldfo.jpg" },
+      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/IMG_9662_oxlkcc.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/IMG_9662_oxlkcc.jpg", name: "IMG_9662_oxlkcc.jpg" },
+      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/IMG_9654_zhy2px.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/IMG_9654_zhy2px.jpg", name: "IMG_9654_zhy2px.jpg" },
+      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/IMG_9663_wcyx2c.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/IMG_9663_wcyx2c.jpg", name: "IMG_9663_wcyx2c.jpg" },
+      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/IMG_9660_kganuk.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/IMG_9660_kganuk.jpg", name: "IMG_9660_kganuk.jpg" },
+      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/IMG_9653_qi0w7a.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/IMG_9653_qi0w7a.jpg", name: "IMG_9653_qi0w7a.jpg" },
+      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/IMG_9615_xmaxdm.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/IMG_9615_xmaxdm.jpg", name: "IMG_9615_xmaxdm.jpg" },
+      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/IMG_9661_suqhcj.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/IMG_9661_suqhcj.jpg", name: "IMG_9661_suqhcj.jpg" },
+      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/IMG_9665_gdeb1o.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/IMG_9665_gdeb1o.jpg", name: "IMG_9665_gdeb1o.jpg" },
+      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/IMG_9649_klelfl.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/IMG_9649_klelfl.jpg", name: "IMG_9649_klelfl.jpg" },
+      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/IMG_9668_qzqxm5.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/IMG_9668_qzqxm5.jpg", name: "IMG_9668_qzqxm5.jpg" },
+      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/IMG_9650_fwgcc0.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/IMG_9650_fwgcc0.jpg", name: "IMG_9650_fwgcc0.jpg" },
+      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/IMG_9670_aeegmx.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/IMG_9670_aeegmx.jpg", name: "IMG_9670_aeegmx.jpg" },
+      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/Screenshot_2026-05-11_at_8.28.35_AM_jmbs89.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/Screenshot_2026-05-11_at_8.28.35_AM_jmbs89.jpg", name: "Screenshot_2026-05-11_at_8.28.35_AM_jmbs89.jpg" },
+      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/IMG_9608_painss.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/IMG_9608_painss.jpg", name: "IMG_9608_painss.jpg" },
+      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/IMG_9657_eq5dwa.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/IMG_9657_eq5dwa.jpg", name: "IMG_9657_eq5dwa.jpg" },
+      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/IMG_9656_zfu5yl.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/IMG_9656_zfu5yl.jpg", name: "IMG_9656_zfu5yl.jpg" },
+      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/IMG_9655_rwp05s.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/IMG_9655_rwp05s.jpg", name: "IMG_9655_rwp05s.jpg" },
+      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/Screenshot_2026-05-11_at_8.27.59_AM_jvunlj.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/Screenshot_2026-05-11_at_8.27.59_AM_jvunlj.jpg", name: "Screenshot_2026-05-11_at_8.27.59_AM_jvunlj.jpg" },
+      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/Screenshot_2026-05-11_at_8.26.13_AM_h62gbd.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/Screenshot_2026-05-11_at_8.26.13_AM_h62gbd.jpg", name: "Screenshot_2026-05-11_at_8.26.13_AM_h62gbd.jpg" },
+      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/Screenshot_2026-05-11_at_8.18.22_AM_qm3mdg.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/Screenshot_2026-05-11_at_8.18.22_AM_qm3mdg.jpg", name: "Screenshot_2026-05-11_at_8.18.22_AM_qm3mdg.jpg" },
+      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/Screenshot_2026-05-11_at_8.28.17_AM_mak1j6.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/Screenshot_2026-05-11_at_8.28.17_AM_mak1j6.jpg", name: "Screenshot_2026-05-11_at_8.28.17_AM_mak1j6.jpg" },
+      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/Screenshot_2026-05-11_at_8.26.19_AM_znnlq7.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/Screenshot_2026-05-11_at_8.26.19_AM_znnlq7.jpg", name: "Screenshot_2026-05-11_at_8.26.19_AM_znnlq7.jpg" },
+      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/Screenshot_2026-05-11_at_8.32.03_AM_tvvech.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/Screenshot_2026-05-11_at_8.32.03_AM_tvvech.jpg", name: "Screenshot_2026-05-11_at_8.32.03_AM_tvvech.jpg" },
+      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/Screenshot_2026-05-11_at_8.31.53_AM_dnw6ln.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/Screenshot_2026-05-11_at_8.31.53_AM_dnw6ln.jpg", name: "Screenshot_2026-05-11_at_8.31.53_AM_dnw6ln.jpg" },
+      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/Screenshot_2026-05-11_at_8.26.05_AM_eqsmyr.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/Screenshot_2026-05-11_at_8.26.05_AM_eqsmyr.jpg", name: "Screenshot_2026-05-11_at_8.26.05_AM_eqsmyr.jpg" },
+      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/Screenshot_2026-05-11_at_8.25.57_AM_muhpsh.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/Screenshot_2026-05-11_at_8.25.57_AM_muhpsh.jpg", name: "Screenshot_2026-05-11_at_8.25.57_AM_muhpsh.jpg" }
     ],
     people_on_boats: [
-      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/v1778209358/IMG_9747_rwehkh.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/v1778209358/IMG_9747_rwehkh.jpg", name: "IMG 9747.jpg" },
-      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/v1778209358/IMG_9750_h6cueu.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/v1778209358/IMG_9750_h6cueu.jpg", name: "IMG 9750.jpg" },
-      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/v1778209356/IMG_9756_umv8dg.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/v1778209356/IMG_9756_umv8dg.jpg", name: "IMG 9756.jpg" },
-      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/v1778209359/IMG_9760_qr1se8.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/v1778209359/IMG_9760_qr1se8.jpg", name: "IMG 9760.jpg" },
-      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/v1778209363/IMG_9764_ht65hs.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/v1778209363/IMG_9764_ht65hs.jpg", name: "IMG 9764.jpg" },
-      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/v1778209357/IMG_9767_dur8rv.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/v1778209357/IMG_9767_dur8rv.jpg", name: "IMG 9767.jpg" },
-      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/v1778209357/IMG_9768_jdzr4n.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/v1778209357/IMG_9768_jdzr4n.jpg", name: "IMG 9768.jpg" },
-      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/v1778209359/IMG_9772_vsyhop.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/v1778209359/IMG_9772_vsyhop.jpg", name: "IMG 9772.jpg" },
-      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/v1778209366/IMG_9773_nb6gcj.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/v1778209366/IMG_9773_nb6gcj.jpg", name: "IMG 9773.jpg" },
-      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/v1778209364/IMG_9774_lkuksp.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/v1778209364/IMG_9774_lkuksp.jpg", name: "IMG 9774.jpg" },
-      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/v1778209363/IMG_9776_twf15q.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/v1778209363/IMG_9776_twf15q.jpg", name: "IMG 9776.jpg" },
-      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/v1778209360/IMG_9778_jhkikw.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/v1778209360/IMG_9778_jhkikw.jpg", name: "IMG 9778.jpg" },
-      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/v1778209364/IMG_9779_tecpq3.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/v1778209364/IMG_9779_tecpq3.jpg", name: "IMG 9779.jpg" },
-      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/v1778209367/IMG_9783_htmqip.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/v1778209367/IMG_9783_htmqip.jpg", name: "IMG 9783.jpg" },
-      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/v1778209370/IMG_9784_dwqmrl.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/v1778209370/IMG_9784_dwqmrl.jpg", name: "IMG 9784.jpg" },
-      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/v1778209369/IMG_9785_m93mh2.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/v1778209369/IMG_9785_m93mh2.jpg", name: "IMG 9785.jpg" },
-      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/v1778209372/IMG_9792_lboga7.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/v1778209372/IMG_9792_lboga7.jpg", name: "IMG 9792.jpg" },
-      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/v1778209371/IMG_9794_ctcp9c.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/v1778209371/IMG_9794_ctcp9c.jpg", name: "IMG 9794.jpg" },
-      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/v1778209372/IMG_9797_lcwai2.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/v1778209372/IMG_9797_lcwai2.jpg", name: "IMG 9797.jpg" },
-      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/v1778209373/IMG_9799_gkjide.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/v1778209373/IMG_9799_gkjide.jpg", name: "IMG 9799.jpg" },
-      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/v1778209375/IMG_9805_r5wszr.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/v1778209375/IMG_9805_r5wszr.jpg", name: "IMG 9805.jpg" },
-      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/v1778209376/IMG_9812_tbyq2m.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/v1778209376/IMG_9812_tbyq2m.jpg", name: "IMG 9812.jpg" },
-      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/v1778209375/IMG_9830_epafpp.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/v1778209375/IMG_9830_epafpp.jpg", name: "IMG 9830.jpg" },
-      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/v1778209376/IMG_9832_teuayx.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/v1778209376/IMG_9832_teuayx.jpg", name: "IMG 9832.jpg" },
-      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/v1778209377/IMG_9837_f3sybi.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/v1778209377/IMG_9837_f3sybi.jpg", name: "IMG 9837.jpg" },
-      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/v1778209378/IMG_9839_ey3ycw.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/v1778209378/IMG_9839_ey3ycw.jpg", name: "IMG 9839.jpg" },
-      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/v1778209379/IMG_9842_trxfms.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/v1778209379/IMG_9842_trxfms.jpg", name: "IMG 9842.jpg" },
-      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/v1778209380/IMG_9843_xudkev.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/v1778209380/IMG_9843_xudkev.jpg", name: "IMG 9843.jpg" },
-      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/v1778209380/IMG_9847_ghkm4i.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/v1778209380/IMG_9847_ghkm4i.jpg", name: "IMG 9847.jpg" },
-      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/v1778209381/IMG_9855_mf6jcj.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/v1778209381/IMG_9855_mf6jcj.jpg", name: "IMG 9855.jpg" },
-      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/v1778209382/IMG_9857_wq49hw.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/v1778209382/IMG_9857_wq49hw.jpg", name: "IMG 9857.jpg" },
-      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/v1778209383/Screenshot_2026-05-07_at_10.47.10_AM_tpch7v.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/v1778209383/Screenshot_2026-05-07_at_10.47.10_AM_tpch7v.jpg", name: "Screenshot 2026-05-07 at 10.47.10 AM.jpg" },
-      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/v1778209383/Screenshot_2026-05-07_at_10.47.27_AM_h6iton.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/v1778209383/Screenshot_2026-05-07_at_10.47.27_AM_h6iton.jpg", name: "Screenshot 2026-05-07 at 10.47.27 AM.jpg" },
-      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/v1778209384/Screenshot_2026-05-07_at_10.47.41_AM_mn3xgr.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/v1778209384/Screenshot_2026-05-07_at_10.47.41_AM_mn3xgr.jpg", name: "Screenshot 2026-05-07 at 10.47.41 AM.jpg" },
-      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/v1778209385/Screenshot_2026-05-07_at_10.47.54_AM_sht7bj.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/v1778209385/Screenshot_2026-05-07_at_10.47.54_AM_sht7bj.jpg", name: "Screenshot 2026-05-07 at 10.47.54 AM.jpg" },
-      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/v1778209386/Screenshot_2026-05-07_at_10.48.00_AM_oh0afs.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/v1778209386/Screenshot_2026-05-07_at_10.48.00_AM_oh0afs.jpg", name: "Screenshot 2026-05-07 at 10.48.00 AM.jpg" },
-      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/v1778209388/Screenshot_2026-05-07_at_10.48.28_AM_wmgkys.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/v1778209388/Screenshot_2026-05-07_at_10.48.28_AM_wmgkys.jpg", name: "Screenshot 2026-05-07 at 10.48.28 AM.jpg" },
-      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/v1778209387/Screenshot_2026-05-07_at_10.48.37_AM_osucfs.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/v1778209387/Screenshot_2026-05-07_at_10.48.37_AM_osucfs.jpg", name: "Screenshot 2026-05-07 at 10.48.37 AM.jpg" },
-      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/v1778209390/Screenshot_2026-05-07_at_10.48.45_AM_bagwyd.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/v1778209390/Screenshot_2026-05-07_at_10.48.45_AM_bagwyd.jpg", name: "Screenshot 2026-05-07 at 10.48.45 AM.jpg" },
-      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/v1778209389/Screenshot_2026-05-07_at_10.49.05_AM_lwlc5l.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/v1778209389/Screenshot_2026-05-07_at_10.49.05_AM_lwlc5l.jpg", name: "Screenshot 2026-05-07 at 10.49.05 AM.jpg" },
-      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/v1778209390/Screenshot_2026-05-07_at_10.49.15_AM_azrd0f.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/v1778209390/Screenshot_2026-05-07_at_10.49.15_AM_azrd0f.jpg", name: "Screenshot 2026-05-07 at 10.49.15 AM.jpg" },
-      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/v1778209391/Screenshot_2026-05-07_at_10.49.26_AM_zh9vl4.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/v1778209391/Screenshot_2026-05-07_at_10.49.26_AM_zh9vl4.jpg", name: "Screenshot 2026-05-07 at 10.49.26 AM.jpg" }
+      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/Screenshot_2026-05-11_at_8.27.49_AM_izeh0v.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/Screenshot_2026-05-11_at_8.27.49_AM_izeh0v.jpg", name: "Screenshot_2026-05-11_at_8.27.49_AM_izeh0v.jpg" },
+      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/Screenshot_2026-05-11_at_8.27.25_AM_qpxkum.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/Screenshot_2026-05-11_at_8.27.25_AM_qpxkum.jpg", name: "Screenshot_2026-05-11_at_8.27.25_AM_qpxkum.jpg" },
+      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/Screenshot_2026-05-11_at_8.27.42_AM_wchrxa.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/Screenshot_2026-05-11_at_8.27.42_AM_wchrxa.jpg", name: "Screenshot_2026-05-11_at_8.27.42_AM_wchrxa.jpg" },
+      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/Screenshot_2026-05-11_at_8.21.53_AM_uwnixk.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/Screenshot_2026-05-11_at_8.21.53_AM_uwnixk.jpg", name: "Screenshot_2026-05-11_at_8.21.53_AM_uwnixk.jpg" },
+      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/Screenshot_2026-05-11_at_8.33.16_AM_xywcgu.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/Screenshot_2026-05-11_at_8.33.16_AM_xywcgu.jpg", name: "Screenshot_2026-05-11_at_8.33.16_AM_xywcgu.jpg" },
+      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/Screenshot_2026-05-11_at_9.02.11_AM_o0owof.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/Screenshot_2026-05-11_at_9.02.11_AM_o0owof.jpg", name: "Screenshot_2026-05-11_at_9.02.11_AM_o0owof.jpg" },
+      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/Screenshot_2026-05-11_at_9.01.29_AM_yzxp2l.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/Screenshot_2026-05-11_at_9.01.29_AM_yzxp2l.jpg", name: "Screenshot_2026-05-11_at_9.01.29_AM_yzxp2l.jpg" },
+      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/Screenshot_2026-05-11_at_8.32.30_AM_crcy0h.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/Screenshot_2026-05-11_at_8.32.30_AM_crcy0h.jpg", name: "Screenshot_2026-05-11_at_8.32.30_AM_crcy0h.jpg" },
+      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/Screenshot_2026-05-11_at_9.01.15_AM_vyi8bo.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/Screenshot_2026-05-11_at_9.01.15_AM_vyi8bo.jpg", name: "Screenshot_2026-05-11_at_9.01.15_AM_vyi8bo.jpg" },
+      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/Screenshot_2026-05-11_at_9.00.36_AM_ascg2j.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/Screenshot_2026-05-11_at_9.00.36_AM_ascg2j.jpg", name: "Screenshot_2026-05-11_at_9.00.36_AM_ascg2j.jpg" },
+      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/Screenshot_2026-05-11_at_8.59.20_AM_ddyzbh.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/Screenshot_2026-05-11_at_8.59.20_AM_ddyzbh.jpg", name: "Screenshot_2026-05-11_at_8.59.20_AM_ddyzbh.jpg" },
+      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/Screenshot_2026-05-11_at_9.01.46_AM_mxvmui.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/Screenshot_2026-05-11_at_9.01.46_AM_mxvmui.jpg", name: "Screenshot_2026-05-11_at_9.01.46_AM_mxvmui.jpg" },
+      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/Screenshot_2026-05-11_at_8.58.52_AM_tw92vp.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/Screenshot_2026-05-11_at_8.58.52_AM_tw92vp.jpg", name: "Screenshot_2026-05-11_at_8.58.52_AM_tw92vp.jpg" },
+      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/Screenshot_2026-05-11_at_8.19.06_AM_xqyil8.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/Screenshot_2026-05-11_at_8.19.06_AM_xqyil8.jpg", name: "Screenshot_2026-05-11_at_8.19.06_AM_xqyil8.jpg" },
+      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/Screenshot_2026-05-11_at_9.00.59_AM_kpwcg9.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/Screenshot_2026-05-11_at_9.00.59_AM_kpwcg9.jpg", name: "Screenshot_2026-05-11_at_9.00.59_AM_kpwcg9.jpg" },
+      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/Screenshot_2026-05-11_at_8.18.56_AM_a4h11l.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/Screenshot_2026-05-11_at_8.18.56_AM_a4h11l.jpg", name: "Screenshot_2026-05-11_at_8.18.56_AM_a4h11l.jpg" },
+      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/Screenshot_2026-05-11_at_8.59.32_AM_drvzkr.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/Screenshot_2026-05-11_at_8.59.32_AM_drvzkr.jpg", name: "Screenshot_2026-05-11_at_8.59.32_AM_drvzkr.jpg" },
+      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/Screenshot_2026-05-11_at_8.18.45_AM_jvqrgg.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/Screenshot_2026-05-11_at_8.18.45_AM_jvqrgg.jpg", name: "Screenshot_2026-05-11_at_8.18.45_AM_jvqrgg.jpg" },
+      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/Screenshot_2026-05-11_at_8.18.31_AM_phymsw.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/Screenshot_2026-05-11_at_8.18.31_AM_phymsw.jpg", name: "Screenshot_2026-05-11_at_8.18.31_AM_phymsw.jpg" },
+      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/Screenshot_2026-05-11_at_8.23.02_AM_ydgbcl.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/Screenshot_2026-05-11_at_8.23.02_AM_ydgbcl.jpg", name: "Screenshot_2026-05-11_at_8.23.02_AM_ydgbcl.jpg" },
+      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/Screenshot_2026-05-11_at_9.00.03_AM_pruhgq.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/Screenshot_2026-05-11_at_9.00.03_AM_pruhgq.jpg", name: "Screenshot_2026-05-11_at_9.00.03_AM_pruhgq.jpg" },
+      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/Screenshot_2026-05-11_at_8.19.23_AM_dy79o2.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/Screenshot_2026-05-11_at_8.19.23_AM_dy79o2.jpg", name: "Screenshot_2026-05-11_at_8.19.23_AM_dy79o2.jpg" },
+      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/Screenshot_2026-05-11_at_8.19.51_AM_qerfxr.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/Screenshot_2026-05-11_at_8.19.51_AM_qerfxr.jpg", name: "Screenshot_2026-05-11_at_8.19.51_AM_qerfxr.jpg" },
+      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/Screenshot_2026-05-11_at_8.22.48_AM_ff3hlt.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/Screenshot_2026-05-11_at_8.22.48_AM_ff3hlt.jpg", name: "Screenshot_2026-05-11_at_8.22.48_AM_ff3hlt.jpg" },
+      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/Screenshot_2026-05-07_at_10.49.26_AM_zh9vl4.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/Screenshot_2026-05-07_at_10.49.26_AM_zh9vl4.jpg", name: "Screenshot_2026-05-07_at_10.49.26_AM_zh9vl4.jpg" },
+      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/Screenshot_2026-05-07_at_10.49.15_AM_azrd0f.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/Screenshot_2026-05-07_at_10.49.15_AM_azrd0f.jpg", name: "Screenshot_2026-05-07_at_10.49.15_AM_azrd0f.jpg" },
+      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/Screenshot_2026-05-07_at_10.48.45_AM_bagwyd.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/Screenshot_2026-05-07_at_10.48.45_AM_bagwyd.jpg", name: "Screenshot_2026-05-07_at_10.48.45_AM_bagwyd.jpg" },
+      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/Screenshot_2026-05-07_at_10.49.05_AM_lwlc5l.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/Screenshot_2026-05-07_at_10.49.05_AM_lwlc5l.jpg", name: "Screenshot_2026-05-07_at_10.49.05_AM_lwlc5l.jpg" },
+      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/Screenshot_2026-05-07_at_10.48.28_AM_wmgkys.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/Screenshot_2026-05-07_at_10.48.28_AM_wmgkys.jpg", name: "Screenshot_2026-05-07_at_10.48.28_AM_wmgkys.jpg" },
+      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/Screenshot_2026-05-07_at_10.48.37_AM_osucfs.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/Screenshot_2026-05-07_at_10.48.37_AM_osucfs.jpg", name: "Screenshot_2026-05-07_at_10.48.37_AM_osucfs.jpg" },
+      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/Screenshot_2026-05-07_at_10.48.00_AM_oh0afs.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/Screenshot_2026-05-07_at_10.48.00_AM_oh0afs.jpg", name: "Screenshot_2026-05-07_at_10.48.00_AM_oh0afs.jpg" },
+      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/Screenshot_2026-05-07_at_10.47.54_AM_sht7bj.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/Screenshot_2026-05-07_at_10.47.54_AM_sht7bj.jpg", name: "Screenshot_2026-05-07_at_10.47.54_AM_sht7bj.jpg" },
+      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/Screenshot_2026-05-07_at_10.47.41_AM_mn3xgr.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/Screenshot_2026-05-07_at_10.47.41_AM_mn3xgr.jpg", name: "Screenshot_2026-05-07_at_10.47.41_AM_mn3xgr.jpg" },
+      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/Screenshot_2026-05-07_at_10.47.27_AM_h6iton.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/Screenshot_2026-05-07_at_10.47.27_AM_h6iton.jpg", name: "Screenshot_2026-05-07_at_10.47.27_AM_h6iton.jpg" },
+      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/Screenshot_2026-05-07_at_10.47.10_AM_tpch7v.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/Screenshot_2026-05-07_at_10.47.10_AM_tpch7v.jpg", name: "Screenshot_2026-05-07_at_10.47.10_AM_tpch7v.jpg" },
+      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/IMG_9857_wq49hw.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/IMG_9857_wq49hw.jpg", name: "IMG_9857_wq49hw.jpg" },
+      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/IMG_9855_mf6jcj.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/IMG_9855_mf6jcj.jpg", name: "IMG_9855_mf6jcj.jpg" },
+      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/IMG_9847_ghkm4i.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/IMG_9847_ghkm4i.jpg", name: "IMG_9847_ghkm4i.jpg" },
+      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/IMG_9843_xudkev.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/IMG_9843_xudkev.jpg", name: "IMG_9843_xudkev.jpg" },
+      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/IMG_9842_trxfms.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/IMG_9842_trxfms.jpg", name: "IMG_9842_trxfms.jpg" },
+      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/IMG_9839_ey3ycw.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/IMG_9839_ey3ycw.jpg", name: "IMG_9839_ey3ycw.jpg" },
+      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/IMG_9837_f3sybi.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/IMG_9837_f3sybi.jpg", name: "IMG_9837_f3sybi.jpg" },
+      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/IMG_9832_teuayx.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/IMG_9832_teuayx.jpg", name: "IMG_9832_teuayx.jpg" },
+      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/IMG_9812_tbyq2m.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/IMG_9812_tbyq2m.jpg", name: "IMG_9812_tbyq2m.jpg" },
+      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/IMG_9830_epafpp.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/IMG_9830_epafpp.jpg", name: "IMG_9830_epafpp.jpg" },
+      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/IMG_9805_r5wszr.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/IMG_9805_r5wszr.jpg", name: "IMG_9805_r5wszr.jpg" },
+      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/IMG_9799_gkjide.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/IMG_9799_gkjide.jpg", name: "IMG_9799_gkjide.jpg" },
+      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/IMG_9797_lcwai2.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/IMG_9797_lcwai2.jpg", name: "IMG_9797_lcwai2.jpg" },
+      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/IMG_9792_lboga7.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/IMG_9792_lboga7.jpg", name: "IMG_9792_lboga7.jpg" },
+      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/IMG_9794_ctcp9c.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/IMG_9794_ctcp9c.jpg", name: "IMG_9794_ctcp9c.jpg" },
+      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/IMG_9784_dwqmrl.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/IMG_9784_dwqmrl.jpg", name: "IMG_9784_dwqmrl.jpg" },
+      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/IMG_9785_m93mh2.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/IMG_9785_m93mh2.jpg", name: "IMG_9785_m93mh2.jpg" },
+      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/IMG_9783_htmqip.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/IMG_9783_htmqip.jpg", name: "IMG_9783_htmqip.jpg" },
+      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/IMG_9773_nb6gcj.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/IMG_9773_nb6gcj.jpg", name: "IMG_9773_nb6gcj.jpg" },
+      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/IMG_9779_tecpq3.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/IMG_9779_tecpq3.jpg", name: "IMG_9779_tecpq3.jpg" },
+      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/IMG_9774_lkuksp.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/IMG_9774_lkuksp.jpg", name: "IMG_9774_lkuksp.jpg" },
+      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/IMG_9776_twf15q.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/IMG_9776_twf15q.jpg", name: "IMG_9776_twf15q.jpg" },
+      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/IMG_9764_ht65hs.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/IMG_9764_ht65hs.jpg", name: "IMG_9764_ht65hs.jpg" },
+      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/IMG_9778_jhkikw.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/IMG_9778_jhkikw.jpg", name: "IMG_9778_jhkikw.jpg" },
+      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/IMG_9772_vsyhop.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/IMG_9772_vsyhop.jpg", name: "IMG_9772_vsyhop.jpg" },
+      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/IMG_9760_qr1se8.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/IMG_9760_qr1se8.jpg", name: "IMG_9760_qr1se8.jpg" },
+      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/IMG_9747_rwehkh.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/IMG_9747_rwehkh.jpg", name: "IMG_9747_rwehkh.jpg" },
+      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/IMG_9750_h6cueu.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/IMG_9750_h6cueu.jpg", name: "IMG_9750_h6cueu.jpg" },
+      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/IMG_9768_jdzr4n.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/IMG_9768_jdzr4n.jpg", name: "IMG_9768_jdzr4n.jpg" },
+      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/IMG_9767_dur8rv.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/IMG_9767_dur8rv.jpg", name: "IMG_9767_dur8rv.jpg" },
+      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/IMG_9756_umv8dg.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/IMG_9756_umv8dg.jpg", name: "IMG_9756_umv8dg.jpg" }
+    ],
+    coastguard_personnel: [
+      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/IMG_9629_b4teyu.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/IMG_9629_b4teyu.jpg", name: "IMG_9629_b4teyu.jpg" },
+      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/Screenshot_2026-05-11_at_8.14.53_AM_aemwkt.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/Screenshot_2026-05-11_at_8.14.53_AM_aemwkt.jpg", name: "Screenshot_2026-05-11_at_8.14.53_AM_aemwkt.jpg" },
+      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/IMG_9645_cx7bu6.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/IMG_9645_cx7bu6.jpg", name: "IMG_9645_cx7bu6.jpg" },
+      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/IMG_9684_fakg11.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/IMG_9684_fakg11.jpg", name: "IMG_9684_fakg11.jpg" },
+      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/IMG_9682_jrxyja.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/IMG_9682_jrxyja.jpg", name: "IMG_9682_jrxyja.jpg" },
+      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/IMG_9640_bvchzx.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/IMG_9640_bvchzx.jpg", name: "IMG_9640_bvchzx.jpg" },
+      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/IMG_9672_gixmk4.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/IMG_9672_gixmk4.jpg", name: "IMG_9672_gixmk4.jpg" },
+      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/IMG_9687_egfywc.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/IMG_9687_egfywc.jpg", name: "IMG_9687_egfywc.jpg" },
+      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/IMG_9681_lmmhjn.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/IMG_9681_lmmhjn.jpg", name: "IMG_9681_lmmhjn.jpg" },
+      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/Screenshot_2026-05-11_at_8.30.09_AM_yxd2ok.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/Screenshot_2026-05-11_at_8.30.09_AM_yxd2ok.jpg", name: "Screenshot_2026-05-11_at_8.30.09_AM_yxd2ok.jpg" },
+      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/IMG_9689_ykpcll.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/IMG_9689_ykpcll.jpg", name: "IMG_9689_ykpcll.jpg" },
+      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/Screenshot_2026-05-11_at_8.15.43_AM_wdkfgs.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/Screenshot_2026-05-11_at_8.15.43_AM_wdkfgs.jpg", name: "Screenshot_2026-05-11_at_8.15.43_AM_wdkfgs.jpg" },
+      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/IMG_9675_j1pcpw.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/IMG_9675_j1pcpw.jpg", name: "IMG_9675_j1pcpw.jpg" },
+      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/Screenshot_2026-05-11_at_8.30.16_AM_dm38eq.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/Screenshot_2026-05-11_at_8.30.16_AM_dm38eq.jpg", name: "Screenshot_2026-05-11_at_8.30.16_AM_dm38eq.jpg" },
+      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/Screenshot_2026-05-11_at_8.25.13_AM_eupxv2.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/Screenshot_2026-05-11_at_8.25.13_AM_eupxv2.jpg", name: "Screenshot_2026-05-11_at_8.25.13_AM_eupxv2.jpg" },
+      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/Screenshot_2026-05-11_at_8.15.30_AM_lvegvn.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/Screenshot_2026-05-11_at_8.15.30_AM_lvegvn.jpg", name: "Screenshot_2026-05-11_at_8.15.30_AM_lvegvn.jpg" },
+      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/Screenshot_2026-05-11_at_8.27.13_AM_xvvw4a.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/Screenshot_2026-05-11_at_8.27.13_AM_xvvw4a.jpg", name: "Screenshot_2026-05-11_at_8.27.13_AM_xvvw4a.jpg" },
+      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/Screenshot_2026-05-11_at_8.26.25_AM_mzsc3o.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/Screenshot_2026-05-11_at_8.26.25_AM_mzsc3o.jpg", name: "Screenshot_2026-05-11_at_8.26.25_AM_mzsc3o.jpg" },
+      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/Screenshot_2026-05-11_at_8.26.48_AM_bkfqid.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/Screenshot_2026-05-11_at_8.26.48_AM_bkfqid.jpg", name: "Screenshot_2026-05-11_at_8.26.48_AM_bkfqid.jpg" }
     ],
     team_shots: [
-      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/v1778208517/IMGC9191_qcc0nm.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/v1778208517/IMGC9191_qcc0nm.jpg", name: "IMGC9191.jpg" },
-      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/v1778208516/IMGC9195_z9ihr9.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/v1778208516/IMGC9195_z9ihr9.jpg", name: "IMGC9195.jpg" },
-      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/v1778208518/IMGC9198_lu9c4j.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/v1778208518/IMGC9198_lu9c4j.jpg", name: "IMGC9198.jpg" },
-      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/v1778208517/IMGC9205_v04zrk.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/v1778208517/IMGC9205_v04zrk.jpg", name: "IMGC9205.jpg" },
-      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/v1778208519/IMGC9207_dxwudy.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/v1778208519/IMGC9207_dxwudy.jpg", name: "IMGC9207.jpg" }
+      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/IMGC9207_dxwudy.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/IMGC9207_dxwudy.jpg", name: "IMGC9207_dxwudy.jpg" },
+      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/IMGC9198_lu9c4j.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/IMGC9198_lu9c4j.jpg", name: "IMGC9198_lu9c4j.jpg" },
+      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/IMGC9191_qcc0nm.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/IMGC9191_qcc0nm.jpg", name: "IMGC9191_qcc0nm.jpg" },
+      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/IMGC9205_v04zrk.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/IMGC9205_v04zrk.jpg", name: "IMGC9205_v04zrk.jpg" },
+      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/IMGC9195_z9ihr9.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/IMGC9195_z9ihr9.jpg", name: "IMGC9195_z9ihr9.jpg" }
     ],
     training: [
-      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/v1778210336/IMGC9119_niide0.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/v1778210336/IMGC9119_niide0.jpg", name: "IMGC9119.jpg" },
-      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/v1778210422/IMGC9124_m0tjf8.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/v1778210422/IMGC9124_m0tjf8.jpg", name: "IMGC9124.jpg" },
-      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/v1778210333/IMGC9137_y9uodl.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/v1778210333/IMGC9137_y9uodl.jpg", name: "IMGC9137.jpg" },
-      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/v1778210346/IMGC9147_egxn0p.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/v1778210346/IMGC9147_egxn0p.jpg", name: "IMGC9147.jpg" },
-      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/v1778210343/IMGC9151_dh9feq.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/v1778210343/IMGC9151_dh9feq.jpg", name: "IMGC9151.jpg" },
-      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/v1778210329/IMGC9164_nl41n6.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/v1778210329/IMGC9164_nl41n6.jpg", name: "IMGC9164.jpg" },
-      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/v1778210326/IMGC9172_p82olb.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/v1778210326/IMGC9172_p82olb.jpg", name: "IMGC9172.jpg" },
-      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/v1778210323/IMGC9210_ua1nuf.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/v1778210323/IMGC9210_ua1nuf.jpg", name: "IMGC9210.jpg" },
-      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/v1778210349/IMGC9217_xfubos.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/v1778210349/IMGC9217_xfubos.jpg", name: "IMGC9217.jpg" },
-      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/v1778210429/IMGC9219_cafeaq.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/v1778210429/IMGC9219_cafeaq.jpg", name: "IMGC9219.jpg" },
-      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/v1778210341/IMGC9222_metfzq.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/v1778210341/IMGC9222_metfzq.jpg", name: "IMGC9222.jpg" },
-      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/v1778210428/IMGC9224_vfhetm.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/v1778210428/IMGC9224_vfhetm.jpg", name: "IMGC9224.jpg" },
-      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/v1778210423/IMGC9230_jxavsi.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/v1778210423/IMGC9230_jxavsi.jpg", name: "IMGC9230.jpg" },
-      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/v1778210351/IMGC9238_ix4cpy.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/v1778210351/IMGC9238_ix4cpy.jpg", name: "IMGC9238.jpg" },
-      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/v1778210362/IMGC9242_pmpdws.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/v1778210362/IMGC9242_pmpdws.jpg", name: "IMGC9242.jpg" },
-      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/v1778210356/IMGC9249_wfaiaq.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/v1778210356/IMGC9249_wfaiaq.jpg", name: "IMGC9249.jpg" },
-      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/v1778210363/IMGC9250_uqthzb.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/v1778210363/IMGC9250_uqthzb.jpg", name: "IMGC9250.jpg" },
-      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/v1778210366/IMGC9252_tyoqex.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/v1778210366/IMGC9252_tyoqex.jpg", name: "IMGC9252.jpg" },
-      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/v1778210358/IMGC9257_y4trup.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/v1778210358/IMGC9257_y4trup.jpg", name: "IMGC9257.jpg" },
-      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/v1778210352/IMGC9258_brbgr5.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/v1778210352/IMGC9258_brbgr5.jpg", name: "IMGC9258.jpg" },
-      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/v1778210321/IMG_9708_q8nis7.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/v1778210321/IMG_9708_q8nis7.jpg", name: "IMG 9708.jpg" },
-      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/v1778210335/IMG_9716_hjfdua.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/v1778210335/IMG_9716_hjfdua.jpg", name: "IMG 9716.jpg" },
-      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/v1778210330/IMG_9719_irdpem.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/v1778210330/IMG_9719_irdpem.jpg", name: "IMG 9719.jpg" },
-      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/v1778210329/IMG_9731_zx01o9.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/v1778210329/IMG_9731_zx01o9.jpg", name: "IMG 9731.jpg" },
-      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/v1778210330/IMG_9733_bsh8vh.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/v1778210330/IMG_9733_bsh8vh.jpg", name: "IMG 9733.jpg" },
-      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/v1778210339/IMG_9739_xcqfin.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/v1778210339/IMG_9739_xcqfin.jpg", name: "IMG 9739.jpg" },
-      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/v1778210316/Screenshot_2026-05-07_at_1.20.24_PM_zfs13f.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/v1778210316/Screenshot_2026-05-07_at_1.20.24_PM_zfs13f.jpg", name: "Screenshot 2026-05-07 at 1.20.24 PM.jpg" },
-      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/v1778210313/Screenshot_2026-05-07_at_1.22.27_PM_jey3he.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/v1778210313/Screenshot_2026-05-07_at_1.22.27_PM_jey3he.jpg", name: "Screenshot 2026-05-07 at 1.22.27 PM.jpg" },
-      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/v1778210318/Screenshot_2026-05-07_at_1.22.46_PM_kmdnof.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/v1778210318/Screenshot_2026-05-07_at_1.22.46_PM_kmdnof.jpg", name: "Screenshot 2026-05-07 at 1.22.46 PM.jpg" },
-      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/v1778210315/Screenshot_2026-05-07_at_1.23.21_PM_ttjeer.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/v1778210315/Screenshot_2026-05-07_at_1.23.21_PM_ttjeer.jpg", name: "Screenshot 2026-05-07 at 1.23.21 PM.jpg" }
+      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/IMGC9219_cafeaq.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/IMGC9219_cafeaq.jpg", name: "IMGC9219_cafeaq.jpg" },
+      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/IMGC9224_vfhetm.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/IMGC9224_vfhetm.jpg", name: "IMGC9224_vfhetm.jpg" },
+      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/IMGC9230_jxavsi.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/IMGC9230_jxavsi.jpg", name: "IMGC9230_jxavsi.jpg" },
+      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/IMGC9124_m0tjf8.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/IMGC9124_m0tjf8.jpg", name: "IMGC9124_m0tjf8.jpg" },
+      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/IMGC9252_tyoqex.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/IMGC9252_tyoqex.jpg", name: "IMGC9252_tyoqex.jpg" },
+      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/IMGC9250_uqthzb.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/IMGC9250_uqthzb.jpg", name: "IMGC9250_uqthzb.jpg" },
+      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/IMGC9242_pmpdws.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/IMGC9242_pmpdws.jpg", name: "IMGC9242_pmpdws.jpg" },
+      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/IMGC9257_y4trup.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/IMGC9257_y4trup.jpg", name: "IMGC9257_y4trup.jpg" },
+      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/IMGC9249_wfaiaq.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/IMGC9249_wfaiaq.jpg", name: "IMGC9249_wfaiaq.jpg" },
+      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/IMGC9258_brbgr5.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/IMGC9258_brbgr5.jpg", name: "IMGC9258_brbgr5.jpg" },
+      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/IMGC9238_ix4cpy.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/IMGC9238_ix4cpy.jpg", name: "IMGC9238_ix4cpy.jpg" },
+      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/IMGC9217_xfubos.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/IMGC9217_xfubos.jpg", name: "IMGC9217_xfubos.jpg" },
+      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/IMGC9147_egxn0p.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/IMGC9147_egxn0p.jpg", name: "IMGC9147_egxn0p.jpg" },
+      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/IMGC9151_dh9feq.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/IMGC9151_dh9feq.jpg", name: "IMGC9151_dh9feq.jpg" },
+      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/IMGC9222_metfzq.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/IMGC9222_metfzq.jpg", name: "IMGC9222_metfzq.jpg" },
+      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/IMG_9739_xcqfin.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/IMG_9739_xcqfin.jpg", name: "IMG_9739_xcqfin.jpg" },
+      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/IMGC9119_niide0.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/IMGC9119_niide0.jpg", name: "IMGC9119_niide0.jpg" },
+      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/IMG_9716_hjfdua.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/IMG_9716_hjfdua.jpg", name: "IMG_9716_hjfdua.jpg" },
+      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/IMGC9137_y9uodl.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/IMGC9137_y9uodl.jpg", name: "IMGC9137_y9uodl.jpg" },
+      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/IMG_9719_irdpem.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/IMG_9719_irdpem.jpg", name: "IMG_9719_irdpem.jpg" },
+      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/IMG_9733_bsh8vh.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/IMG_9733_bsh8vh.jpg", name: "IMG_9733_bsh8vh.jpg" },
+      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/IMG_9731_zx01o9.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/IMG_9731_zx01o9.jpg", name: "IMG_9731_zx01o9.jpg" },
+      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/IMGC9164_nl41n6.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/IMGC9164_nl41n6.jpg", name: "IMGC9164_nl41n6.jpg" },
+      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/IMGC9172_p82olb.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/IMGC9172_p82olb.jpg", name: "IMGC9172_p82olb.jpg" },
+      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/IMGC9210_ua1nuf.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/IMGC9210_ua1nuf.jpg", name: "IMGC9210_ua1nuf.jpg" },
+      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/IMG_9708_q8nis7.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/IMG_9708_q8nis7.jpg", name: "IMG_9708_q8nis7.jpg" },
+      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/Screenshot_2026-05-07_at_1.22.46_PM_kmdnof.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/Screenshot_2026-05-07_at_1.22.46_PM_kmdnof.jpg", name: "Screenshot_2026-05-07_at_1.22.46_PM_kmdnof.jpg" },
+      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/Screenshot_2026-05-07_at_1.20.24_PM_zfs13f.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/Screenshot_2026-05-07_at_1.20.24_PM_zfs13f.jpg", name: "Screenshot_2026-05-07_at_1.20.24_PM_zfs13f.jpg" },
+      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/Screenshot_2026-05-07_at_1.23.21_PM_ttjeer.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/Screenshot_2026-05-07_at_1.23.21_PM_ttjeer.jpg", name: "Screenshot_2026-05-07_at_1.23.21_PM_ttjeer.jpg" },
+      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/Screenshot_2026-05-07_at_1.22.27_PM_jey3he.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/Screenshot_2026-05-07_at_1.22.27_PM_jey3he.jpg", name: "Screenshot_2026-05-07_at_1.22.27_PM_jey3he.jpg" }
     ],
     two_stroke_engine: [
-      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/v1778209688/IMGC9100_r2zxtr.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/v1778209688/IMGC9100_r2zxtr.jpg", name: "IMGC9100.jpg" },
-      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/v1778209689/IMGC9101_s4a4wa.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/v1778209689/IMGC9101_s4a4wa.jpg", name: "IMGC9101.jpg" },
-      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/v1778209690/IMGC9105_f1joue.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/v1778209690/IMGC9105_f1joue.jpg", name: "IMGC9105.jpg" },
-      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/v1778209691/IMGC9108_ulorfu.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/v1778209691/IMGC9108_ulorfu.jpg", name: "IMGC9108.jpg" },
-      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/v1778209692/IMGC9115_g2trig.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/v1778209692/IMGC9115_g2trig.jpg", name: "IMGC9115.jpg" },
-      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/v1778209692/Screenshot_2026-05-07_at_10.39.18_AM_orc246.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/v1778209692/Screenshot_2026-05-07_at_10.39.18_AM_orc246.jpg", name: "Screenshot 2026-05-07 at 10.39.18 AM.jpg" },
-      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/v1778209693/Screenshot_2026-05-07_at_10.39.29_AM_cl3opj.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/v1778209693/Screenshot_2026-05-07_at_10.39.29_AM_cl3opj.jpg", name: "Screenshot 2026-05-07 at 10.39.29 AM.jpg" },
-      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/v1778209694/Screenshot_2026-05-07_at_10.39.51_AM_lmjb3f.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/v1778209694/Screenshot_2026-05-07_at_10.39.51_AM_lmjb3f.jpg", name: "Screenshot 2026-05-07 at 10.39.51 AM.jpg" },
-      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/v1778209695/Screenshot_2026-05-07_at_10.40.12_AM_ptqnya.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/v1778209695/Screenshot_2026-05-07_at_10.40.12_AM_ptqnya.jpg", name: "Screenshot 2026-05-07 at 10.40.12 AM.jpg" },
-      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/v1778209696/Screenshot_2026-05-07_at_10.40.38_AM_s1nojt.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/v1778209696/Screenshot_2026-05-07_at_10.40.38_AM_s1nojt.jpg", name: "Screenshot 2026-05-07 at 10.40.38 AM.jpg" },
-      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/v1778209697/Screenshot_2026-05-07_at_10.41.07_AM_uc2tyu.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/v1778209697/Screenshot_2026-05-07_at_10.41.07_AM_uc2tyu.jpg", name: "Screenshot 2026-05-07 at 10.41.07 AM.jpg" },
-      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/v1778209698/Screenshot_2026-05-07_at_10.41.24_AM_im2ktu.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/v1778209698/Screenshot_2026-05-07_at_10.41.24_AM_im2ktu.jpg", name: "Screenshot 2026-05-07 at 10.41.24 AM.jpg" },
-      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/v1778209699/Screenshot_2026-05-07_at_10.41.36_AM_dgqgrl.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/v1778209699/Screenshot_2026-05-07_at_10.41.36_AM_dgqgrl.jpg", name: "Screenshot 2026-05-07 at 10.41.36 AM.jpg" },
-      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/v1778209700/Screenshot_2026-05-07_at_10.43.31_AM_whu4n1.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/v1778209700/Screenshot_2026-05-07_at_10.43.31_AM_whu4n1.jpg", name: "Screenshot 2026-05-07 at 10.43.31 AM.jpg" },
-      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/v1778209701/Screenshot_2026-05-07_at_10.44.04_AM_o2gzw9.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/v1778209701/Screenshot_2026-05-07_at_10.44.04_AM_o2gzw9.jpg", name: "Screenshot 2026-05-07 at 10.44.04 AM.jpg" }
+      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/Screenshot_2026-05-07_at_10.44.04_AM_o2gzw9.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/Screenshot_2026-05-07_at_10.44.04_AM_o2gzw9.jpg", name: "Screenshot_2026-05-07_at_10.44.04_AM_o2gzw9.jpg" },
+      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/Screenshot_2026-05-07_at_10.43.31_AM_whu4n1.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/Screenshot_2026-05-07_at_10.43.31_AM_whu4n1.jpg", name: "Screenshot_2026-05-07_at_10.43.31_AM_whu4n1.jpg" },
+      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/Screenshot_2026-05-07_at_10.41.36_AM_dgqgrl.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/Screenshot_2026-05-07_at_10.41.36_AM_dgqgrl.jpg", name: "Screenshot_2026-05-07_at_10.41.36_AM_dgqgrl.jpg" },
+      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/Screenshot_2026-05-07_at_10.41.24_AM_im2ktu.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/Screenshot_2026-05-07_at_10.41.24_AM_im2ktu.jpg", name: "Screenshot_2026-05-07_at_10.41.24_AM_im2ktu.jpg" },
+      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/Screenshot_2026-05-07_at_10.41.07_AM_uc2tyu.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/Screenshot_2026-05-07_at_10.41.07_AM_uc2tyu.jpg", name: "Screenshot_2026-05-07_at_10.41.07_AM_uc2tyu.jpg" },
+      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/Screenshot_2026-05-07_at_10.40.38_AM_s1nojt.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/Screenshot_2026-05-07_at_10.40.38_AM_s1nojt.jpg", name: "Screenshot_2026-05-07_at_10.40.38_AM_s1nojt.jpg" },
+      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/Screenshot_2026-05-07_at_10.40.12_AM_ptqnya.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/Screenshot_2026-05-07_at_10.40.12_AM_ptqnya.jpg", name: "Screenshot_2026-05-07_at_10.40.12_AM_ptqnya.jpg" },
+      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/Screenshot_2026-05-07_at_10.39.51_AM_lmjb3f.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/Screenshot_2026-05-07_at_10.39.51_AM_lmjb3f.jpg", name: "Screenshot_2026-05-07_at_10.39.51_AM_lmjb3f.jpg" },
+      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/Screenshot_2026-05-07_at_10.39.29_AM_cl3opj.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/Screenshot_2026-05-07_at_10.39.29_AM_cl3opj.jpg", name: "Screenshot_2026-05-07_at_10.39.29_AM_cl3opj.jpg" },
+      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/Screenshot_2026-05-07_at_10.39.18_AM_orc246.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/Screenshot_2026-05-07_at_10.39.18_AM_orc246.jpg", name: "Screenshot_2026-05-07_at_10.39.18_AM_orc246.jpg" },
+      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/IMGC9115_g2trig.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/IMGC9115_g2trig.jpg", name: "IMGC9115_g2trig.jpg" },
+      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/IMGC9108_ulorfu.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/IMGC9108_ulorfu.jpg", name: "IMGC9108_ulorfu.jpg" },
+      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/IMGC9105_f1joue.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/IMGC9105_f1joue.jpg", name: "IMGC9105_f1joue.jpg" },
+      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/IMGC9101_s4a4wa.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/IMGC9101_s4a4wa.jpg", name: "IMGC9101_s4a4wa.jpg" },
+      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/IMGC9100_r2zxtr.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/IMGC9100_r2zxtr.jpg", name: "IMGC9100_r2zxtr.jpg" }
     ],
     four_stroke_engine: [
-      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/v1778209544/IMGC9071_bs8car.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/v1778209544/IMGC9071_bs8car.jpg", name: "IMGC9071.jpg" },
-      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/v1778209545/IMGC9072_hmyyuk.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/v1778209545/IMGC9072_hmyyuk.jpg", name: "IMGC9072.jpg" },
-      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/v1778209547/IMGC9073_esbg7f.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/v1778209547/IMGC9073_esbg7f.jpg", name: "IMGC9073.jpg" },
-      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/v1778209546/IMGC9074_k4fmec.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/v1778209546/IMGC9074_k4fmec.jpg", name: "IMGC9074.jpg" },
-      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/v1778209531/IMGC9075_nauaon.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/v1778209531/IMGC9075_nauaon.jpg", name: "IMGC9075.jpg" },
-      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/v1778209532/IMGC9076_dqwp1g.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/v1778209532/IMGC9076_dqwp1g.jpg", name: "IMGC9076.jpg" },
-      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/v1778209527/IMGC9077_qt17gz.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/v1778209527/IMGC9077_qt17gz.jpg", name: "IMGC9077.jpg" },
-      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/v1778209529/IMGC9078_d6uxbb.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/v1778209529/IMGC9078_d6uxbb.jpg", name: "IMGC9078.jpg" },
-      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/v1778209529/IMGC9079_vf6rly.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/v1778209529/IMGC9079_vf6rly.jpg", name: "IMGC9079.jpg" },
-      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/v1778209527/IMGC9080_ecvyh2.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/v1778209527/IMGC9080_ecvyh2.jpg", name: "IMGC9080.jpg" },
-      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/v1778209533/IMGC9081_tpddgf.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/v1778209533/IMGC9081_tpddgf.jpg", name: "IMGC9081.jpg" },
-      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/v1778209533/IMGC9083_g3rv7b.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/v1778209533/IMGC9083_g3rv7b.jpg", name: "IMGC9083.jpg" },
-      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/v1778209548/IMGC9084_zfqbg4.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/v1778209548/IMGC9084_zfqbg4.jpg", name: "IMGC9084.jpg" },
-      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/v1778209536/IMGC9086_hxpm7r.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/v1778209536/IMGC9086_hxpm7r.jpg", name: "IMGC9086.jpg" },
-      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/v1778209536/IMGC9087_tk2qjd.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/v1778209536/IMGC9087_tk2qjd.jpg", name: "IMGC9087.jpg" },
-      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/v1778209537/IMGC9088_irpmvp.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/v1778209537/IMGC9088_irpmvp.jpg", name: "IMGC9088.jpg" },
-      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/v1778209538/IMGC9099_ilawff.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/v1778209538/IMGC9099_ilawff.jpg", name: "IMGC9099.jpg" },
-      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/v1778209539/Screenshot_2026-05-07_at_10.36.51_AM_rc4wue.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/v1778209539/Screenshot_2026-05-07_at_10.36.51_AM_rc4wue.jpg", name: "Screenshot 2026-05-07 at 10.36.51 AM.jpg" },
-      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/v1778209540/Screenshot_2026-05-07_at_10.37.24_AM_symksd.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/v1778209540/Screenshot_2026-05-07_at_10.37.24_AM_symksd.jpg", name: "Screenshot 2026-05-07 at 10.37.24 AM.jpg" },
-      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/v1778209541/Screenshot_2026-05-07_at_10.37.44_AM_e8siu5.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/v1778209541/Screenshot_2026-05-07_at_10.37.44_AM_e8siu5.jpg", name: "Screenshot 2026-05-07 at 10.37.44 AM.jpg" },
-      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/v1778209542/Screenshot_2026-05-07_at_10.38.09_AM_alv3id.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/v1778209542/Screenshot_2026-05-07_at_10.38.09_AM_alv3id.jpg", name: "Screenshot 2026-05-07 at 10.38.09 AM.jpg" }
+      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/IMGC9084_zfqbg4.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/IMGC9084_zfqbg4.jpg", name: "IMGC9084_zfqbg4.jpg" },
+      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/IMGC9073_esbg7f.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/IMGC9073_esbg7f.jpg", name: "IMGC9073_esbg7f.jpg" },
+      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/IMGC9074_k4fmec.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/IMGC9074_k4fmec.jpg", name: "IMGC9074_k4fmec.jpg" },
+      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/IMGC9072_hmyyuk.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/IMGC9072_hmyyuk.jpg", name: "IMGC9072_hmyyuk.jpg" },
+      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/IMGC9071_bs8car.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/IMGC9071_bs8car.jpg", name: "IMGC9071_bs8car.jpg" },
+      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/Screenshot_2026-05-07_at_10.38.09_AM_alv3id.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/Screenshot_2026-05-07_at_10.38.09_AM_alv3id.jpg", name: "Screenshot_2026-05-07_at_10.38.09_AM_alv3id.jpg" },
+      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/Screenshot_2026-05-07_at_10.37.44_AM_e8siu5.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/Screenshot_2026-05-07_at_10.37.44_AM_e8siu5.jpg", name: "Screenshot_2026-05-07_at_10.37.44_AM_e8siu5.jpg" },
+      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/Screenshot_2026-05-07_at_10.37.24_AM_symksd.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/Screenshot_2026-05-07_at_10.37.24_AM_symksd.jpg", name: "Screenshot_2026-05-07_at_10.37.24_AM_symksd.jpg" },
+      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/Screenshot_2026-05-07_at_10.36.51_AM_rc4wue.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/Screenshot_2026-05-07_at_10.36.51_AM_rc4wue.jpg", name: "Screenshot_2026-05-07_at_10.36.51_AM_rc4wue.jpg" },
+      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/IMGC9099_ilawff.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/IMGC9099_ilawff.jpg", name: "IMGC9099_ilawff.jpg" },
+      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/IMGC9088_irpmvp.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/IMGC9088_irpmvp.jpg", name: "IMGC9088_irpmvp.jpg" },
+      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/IMGC9087_tk2qjd.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/IMGC9087_tk2qjd.jpg", name: "IMGC9087_tk2qjd.jpg" },
+      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/IMGC9086_hxpm7r.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/IMGC9086_hxpm7r.jpg", name: "IMGC9086_hxpm7r.jpg" },
+      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/IMGC9083_g3rv7b.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/IMGC9083_g3rv7b.jpg", name: "IMGC9083_g3rv7b.jpg" },
+      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/IMGC9081_tpddgf.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/IMGC9081_tpddgf.jpg", name: "IMGC9081_tpddgf.jpg" },
+      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/IMGC9076_dqwp1g.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/IMGC9076_dqwp1g.jpg", name: "IMGC9076_dqwp1g.jpg" },
+      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/IMGC9075_nauaon.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/IMGC9075_nauaon.jpg", name: "IMGC9075_nauaon.jpg" },
+      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/IMGC9079_vf6rly.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/IMGC9079_vf6rly.jpg", name: "IMGC9079_vf6rly.jpg" },
+      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/IMGC9078_d6uxbb.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/IMGC9078_d6uxbb.jpg", name: "IMGC9078_d6uxbb.jpg" },
+      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/IMGC9077_qt17gz.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/IMGC9077_qt17gz.jpg", name: "IMGC9077_qt17gz.jpg" },
+      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/IMGC9080_ecvyh2.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/IMGC9080_ecvyh2.jpg", name: "IMGC9080_ecvyh2.jpg" }
     ],
     large_engine: [
-      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/v1778209427/IMGC9021_ovcrdi.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/v1778209427/IMGC9021_ovcrdi.jpg", name: "IMGC9021.jpg" },
-      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/v1778209428/IMGC9023_ztnpfw.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/v1778209428/IMGC9023_ztnpfw.jpg", name: "IMGC9023.jpg" },
-      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/v1778209429/IMGC9024_pafxsf.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/v1778209429/IMGC9024_pafxsf.jpg", name: "IMGC9024.jpg" },
-      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/v1778209429/IMGC9026_mw9dyv.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/v1778209429/IMGC9026_mw9dyv.jpg", name: "IMGC9026.jpg" },
-      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/v1778209433/IMGC9062_qy92mn.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/v1778209433/IMGC9062_qy92mn.jpg", name: "IMGC9062.jpg" },
-      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/v1778209432/IMGC9063_kk5s1m.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/v1778209432/IMGC9063_kk5s1m.jpg", name: "IMGC9063.jpg" },
-      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/v1778209435/IMGC9066_dg7til.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/v1778209435/IMGC9066_dg7til.jpg", name: "IMGC9066.jpg" },
-      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/v1778209433/IMGC9067_ukmhwk.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/v1778209433/IMGC9067_ukmhwk.jpg", name: "IMGC9067.jpg" },
-      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/v1778209434/IMGC9069_iz8jkq.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/v1778209434/IMGC9069_iz8jkq.jpg", name: "IMGC9069.jpg" },
-      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/v1778209435/IMGC9070_wjkgnk.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/v1778209435/IMGC9070_wjkgnk.jpg", name: "IMGC9070.jpg" },
-      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/v1778209436/Screenshot_2026-05-07_at_10.34.13_AM_sbagd8.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/v1778209436/Screenshot_2026-05-07_at_10.34.13_AM_sbagd8.jpg", name: "Screenshot 2026-05-07 at 10.34.13 AM.jpg" },
-      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/v1778209438/Screenshot_2026-05-07_at_10.34.36_AM_qcwujg.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/v1778209438/Screenshot_2026-05-07_at_10.34.36_AM_qcwujg.jpg", name: "Screenshot 2026-05-07 at 10.34.36 AM.jpg" },
-      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/v1778209439/Screenshot_2026-05-07_at_10.35.00_AM_zqfe9h.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/v1778209439/Screenshot_2026-05-07_at_10.35.00_AM_zqfe9h.jpg", name: "Screenshot 2026-05-07 at 10.35.00 AM.jpg" },
-      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/v1778209441/Screenshot_2026-05-07_at_10.35.15_AM_qp7waz.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/v1778209441/Screenshot_2026-05-07_at_10.35.15_AM_qp7waz.jpg", name: "Screenshot 2026-05-07 at 10.35.15 AM.jpg" },
-      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/v1778209426/Screenshot_2026-05-07_at_10.35.43_AM_qoki1n.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/v1778209426/Screenshot_2026-05-07_at_10.35.43_AM_qoki1n.jpg", name: "Screenshot 2026-05-07 at 10.35.43 AM.jpg" },
-      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/v1778209442/Screenshot_2026-05-07_at_10.46.05_AM_ssklon.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/v1778209442/Screenshot_2026-05-07_at_10.46.05_AM_ssklon.jpg", name: "Screenshot 2026-05-07 at 10.46.05 AM.jpg" },
-      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/v1778209446/Screenshot_2026-05-07_at_10.46.17_AM_pfyj0a.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/v1778209446/Screenshot_2026-05-07_at_10.46.17_AM_pfyj0a.jpg", name: "Screenshot 2026-05-07 at 10.46.17 AM.jpg" }
-    ],
-  };
+      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/Screenshot_2026-05-07_at_10.46.17_AM_pfyj0a.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/Screenshot_2026-05-07_at_10.46.17_AM_pfyj0a.jpg", name: "Screenshot_2026-05-07_at_10.46.17_AM_pfyj0a.jpg" },
+      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/Screenshot_2026-05-07_at_10.46.05_AM_ssklon.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/Screenshot_2026-05-07_at_10.46.05_AM_ssklon.jpg", name: "Screenshot_2026-05-07_at_10.46.05_AM_ssklon.jpg" },
+      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/Screenshot_2026-05-07_at_10.35.15_AM_qp7waz.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/Screenshot_2026-05-07_at_10.35.15_AM_qp7waz.jpg", name: "Screenshot_2026-05-07_at_10.35.15_AM_qp7waz.jpg" },
+      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/Screenshot_2026-05-07_at_10.35.00_AM_zqfe9h.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/Screenshot_2026-05-07_at_10.35.00_AM_zqfe9h.jpg", name: "Screenshot_2026-05-07_at_10.35.00_AM_zqfe9h.jpg" },
+      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/Screenshot_2026-05-07_at_10.34.36_AM_qcwujg.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/Screenshot_2026-05-07_at_10.34.36_AM_qcwujg.jpg", name: "Screenshot_2026-05-07_at_10.34.36_AM_qcwujg.jpg" },
+      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/Screenshot_2026-05-07_at_10.34.13_AM_sbagd8.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/Screenshot_2026-05-07_at_10.34.13_AM_sbagd8.jpg", name: "Screenshot_2026-05-07_at_10.34.13_AM_sbagd8.jpg" },
+      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/IMGC9070_wjkgnk.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/IMGC9070_wjkgnk.jpg", name: "IMGC9070_wjkgnk.jpg" },
+      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/IMGC9066_dg7til.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/IMGC9066_dg7til.jpg", name: "IMGC9066_dg7til.jpg" },
+      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/IMGC9069_iz8jkq.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/IMGC9069_iz8jkq.jpg", name: "IMGC9069_iz8jkq.jpg" },
+      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/IMGC9067_ukmhwk.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/IMGC9067_ukmhwk.jpg", name: "IMGC9067_ukmhwk.jpg" },
+      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/IMGC9062_qy92mn.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/IMGC9062_qy92mn.jpg", name: "IMGC9062_qy92mn.jpg" },
+      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/IMGC9063_kk5s1m.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/IMGC9063_kk5s1m.jpg", name: "IMGC9063_kk5s1m.jpg" },
+      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/IMGC9026_mw9dyv.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/IMGC9026_mw9dyv.jpg", name: "IMGC9026_mw9dyv.jpg" },
+      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/IMGC9024_pafxsf.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/IMGC9024_pafxsf.jpg", name: "IMGC9024_pafxsf.jpg" },
+      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/IMGC9023_ztnpfw.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/IMGC9023_ztnpfw.jpg", name: "IMGC9023_ztnpfw.jpg" },
+      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/IMGC9021_ovcrdi.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/IMGC9021_ovcrdi.jpg", name: "IMGC9021_ovcrdi.jpg" },
+      { url: "https://res.cloudinary.com/deyb4o5qz/image/upload/Screenshot_2026-05-07_at_10.35.43_AM_qoki1n.jpg", thumb: "https://res.cloudinary.com/deyb4o5qz/image/upload/w_400,q_auto,f_auto/Screenshot_2026-05-07_at_10.35.43_AM_qoki1n.jpg", name: "Screenshot_2026-05-07_at_10.35.43_AM_qoki1n.jpg" }
+    ]
+};
 
 const categories = [
-  {key: "boats_on_water", label: "Boats on Water", icon: "&#9973;", count: 26, total: 26, folderLink: "https://www.dropbox.com/scl/fo/8byxjqpeqx8o2ltb0fhdi/APFddqQIvt0dGoVCrgZ2kz4?rlkey=pdf79eq15r6u9bpm4wtb9vh9l&dl=0"},
-  {key: "people_on_boats", label: "People on Boats", icon: "&#128587;", count: 42, total: 42, folderLink: "https://www.dropbox.com/scl/fo/avyv9dgzp7t4zuqp5n3wh/AI4kdD-DFyIZZosFMbzy0bw?rlkey=u3f8mnutt57uzotz59r417qnn&dl=0"},
-  {key: "team_shots", label: "Team Shots", icon: "&#128101;", count: 5, total: 5, folderLink: "https://www.dropbox.com/scl/fo/xns7dv2ndzy1udmun0m5z/AKuCCvqjdiXHONfKsriAP8M?rlkey=vicvqico3gij2tvp6nr60z021&dl=0"},
-  {key: "training", label: "Training", icon: "&#127941;", count: 30, total: 30, folderLink: "https://www.dropbox.com/scl/fo/io6rludt3zm0figah92un/AKh9yddr-2TwyT_BM0MRS8o?rlkey=fzptoybpluwnl5zlugek1pan7&dl=0"},
-  {key: "two_stroke_engine", label: "2-Stroke Engine", icon: "&#9881;", count: 15, total: 15, folderLink: "https://www.dropbox.com/scl/fo/dahbulvlma3fzctas6tfp/AGaeZY0QF2wOZKP-8CNwZts?rlkey=yy62zccj3ttwjbsvuvqd151p4&dl=0"},
-  {key: "four_stroke_engine", label: "4-Stroke Engine", icon: "&#9881;", count: 21, total: 21, folderLink: "https://www.dropbox.com/scl/fo/nhahjg9spyo7j53scap2s/AGNU0UjjOPh8RpfwBoEudo8?rlkey=kb82h41wcwjh8k7lvflqpu1xi&dl=0"},
-  {key: "large_engine", label: "Large Engine", icon: "&#9881;", count: 17, total: 17, folderLink: "https://www.dropbox.com/scl/fo/xfiomff51j1woc7p0wydb/ADKBoJoFu47Pf0yLqH7jAv8?rlkey=sptsivjb98v4378ojddj30ug3&dl=0"}
+    { key: "boats_on_water", label: "Boats on Water", count: 49, cssClass: "" },
+    { key: "coastguard_vessels", label: "Coastguard Vessels", count: 38, cssClass: "" },
+    { key: "people_on_boats", label: "People on Boats", count: 66, cssClass: "" },
+    { key: "coastguard_personnel", label: "Coastguard Personnel", count: 19, cssClass: "" },
+    { key: "team_shots", label: "Team Shots", count: 5, cssClass: "team-shots" },
+    { key: "training", label: "Training", count: 30, cssClass: "" },
+    { key: "two_stroke_engine", label: "2-Stroke Engine", count: 15, cssClass: "" },
+    { key: "four_stroke_engine", label: "4-Stroke Engine", count: 21, cssClass: "" },
+    { key: "large_engine", label: "Large Engine", count: 17, cssClass: "" }
 ];
 
-const ACCESS_CODE = "cg26";
-let currentCat = null;
-let lightboxIndex = 0;
+let currentCategory = null;
+let currentIndex = 0;
 
-function tryLogin() {
-  const code = document.getElementById("accessCode").value.trim().toLowerCase();
-  if (code === ACCESS_CODE) {
-    document.getElementById("loginScreen").classList.add("hidden");
-    document.getElementById("mainGallery").classList.remove("hidden");
+// SHA-256 hash function
+async function sha256(message) {
+  const msgBuffer = new TextEncoder().encode(message);
+  const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
+  const hashArray = Array.from(new Uint8Array(hashBuffer));
+  return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+}
+
+async function tryLogin() {
+  const input = document.getElementById('accessCode').value.trim();
+  const hash = await sha256(input);
+  if (hash === CODE_HASH) {
+    document.getElementById('loginScreen').classList.add('hidden');
+    document.getElementById('mainGallery').classList.remove('hidden');
     renderCategories();
   } else {
-    document.getElementById("loginError").style.display = "block";
+    document.getElementById('loginError').style.display = 'block';
   }
 }
-document.getElementById("accessCode").addEventListener("keydown", function(e) {
-  if (e.key === "Enter") tryLogin();
+
+document.getElementById('accessCode').addEventListener('keydown', function(e) {
+  if (e.key === 'Enter') tryLogin();
 });
 
-
 function renderCategories() {
-  const grid = document.getElementById("catGrid");
-  grid.innerHTML = "";
+  const grid = document.getElementById('catGrid');
+  grid.innerHTML = '';
   categories.forEach(cat => {
-    const card = document.createElement("div");
-    card.className = cat.key === "team_shots" ? "cat-card cat-card-team" : "cat-card";
-    const photos = photoData[cat.key] || [];
-    if (photos.length >= 4) {
-      card.innerHTML = `<div class="cat-thumb-grid">
-        <img src="${photos[0].thumb}" alt="" loading="lazy">
-        <img src="${photos[1].thumb}" alt="" loading="lazy">
-        <img src="${photos[2].thumb}" alt="" loading="lazy">
-        <img src="${photos[3].thumb}" alt="" loading="lazy">
-      </div><div class="cat-label">${cat.label}</div><div class="cat-count">${cat.count} photos</div>`;
-    } else if (photos.length > 0) {
-      card.innerHTML = `<div class="cat-thumb"><img src="${photos[0].thumb}" alt="${cat.label}" loading="lazy"></div><div class="cat-label">${cat.label}</div><div class="cat-count">${cat.count} photos</div>`;
-    } else {
-      card.innerHTML = `<div class="cat-icon">${cat.icon}</div><div class="cat-label">${cat.label}</div><div class="cat-count">${cat.count} photos</div>`;
-    }
-    card.onclick = () => openCategory(cat.key);
+    const photos = photoData[cat.key];
+    const card = document.createElement('div');
+    card.className = 'cat-card' + (cat.cssClass === 'team-shots' ? ' cat-card-team' : '');
+    const thumbs = photos.slice(0, 4);
+    card.innerHTML = `
+      <div class="cat-thumb-grid">
+        ${thumbs.map(p => `<img src="${p.thumb}" alt="" loading="lazy">`).join('')}
+      </div>
+      <div class="cat-label">${cat.label}</div>
+      <div class="cat-count">${cat.count} photos</div>
+    `;
+    card.onclick = () => showCategory(cat);
     grid.appendChild(card);
   });
 }
 
-function openCategory(key) {
-  currentCat = key;
-  const cat = categories.find(c => c.key === key);
-  document.getElementById("categoryView").classList.add("hidden");
-  document.getElementById("photoView").classList.remove("hidden");
-  document.getElementById("photoViewTitle").textContent = cat.label;
-  document.getElementById("folderDownloadBtn").href = cat.folderLink;
-  
-  const grid = document.getElementById("photoGrid");
-  grid.className = key === "team_shots" ? "photo-grid team-shots" : "photo-grid";
-  grid.innerHTML = "";
-  const photos = photoData[key] || [];
-  
-  if (photos.length === 0) {
-    grid.innerHTML = '<div style="grid-column:1/-1; text-align:center; padding:40px; color:rgba(255,255,255,0.4);"><p style="font-size:18px; margin-bottom:10px;">Photos loading soon</p><p>In the meantime, browse and download from Dropbox:</p><a href="' + cat.folderLink + '" target="_blank" style="color:#e63329;">Open Dropbox Folder</a></div>';
-    return;
-  }
-  
+function showCategory(cat) {
+  currentCategory = cat;
+  document.getElementById('categoryView').classList.add('hidden');
+  document.getElementById('photoView').classList.remove('hidden');
+  document.getElementById('photoViewTitle').textContent = cat.label;
+
+  const grid = document.getElementById('photoGrid');
+  grid.className = 'photo-grid' + (cat.cssClass ? ' ' + cat.cssClass : '');
+  grid.innerHTML = '';
+
+  const photos = photoData[cat.key];
   photos.forEach((photo, i) => {
-    const thumb = document.createElement("div");
-    thumb.className = "photo-thumb";
-    thumb.innerHTML = `<div class="loading">Loading...</div><img src="${photo.thumb}" alt="${photo.name}" loading="lazy" onload="this.previousElementSibling.style.display='none'" onerror="this.previousElementSibling.textContent='Failed to load'">`;
-    thumb.onclick = () => openLightbox(key, i);
-    grid.appendChild(thumb);
+    const div = document.createElement('div');
+    div.className = 'photo-thumb';
+    div.innerHTML = `<img src="${photo.thumb}" alt="${photo.name}" loading="lazy">`;
+    div.onclick = () => openLightbox(i);
+    grid.appendChild(div);
   });
+
+  // Reset zip progress
+  document.getElementById('zipProgress').classList.remove('active');
+  document.getElementById('folderDownloadBtn').disabled = false;
+  document.getElementById('folderDownloadBtn').innerHTML = '&#8595; Download All Photos';
+
+  window.scrollTo(0, 0);
 }
 
 function showCategories() {
-  document.getElementById("categoryView").classList.remove("hidden");
-  document.getElementById("photoView").classList.add("hidden");
-  currentCat = null;
+  document.getElementById('categoryView').classList.remove('hidden');
+  document.getElementById('photoView').classList.add('hidden');
+  currentCategory = null;
+  window.scrollTo(0, 0);
 }
 
-function openLightbox(catKey, index) {
-  currentCat = catKey;
-  lightboxIndex = index;
+function openLightbox(index) {
+  currentIndex = index;
   updateLightbox();
-  document.getElementById("lightbox").classList.add("open");
+  document.getElementById('lightbox').classList.add('open');
+  document.body.style.overflow = 'hidden';
 }
 
 function closeLightbox() {
-  document.getElementById("lightbox").classList.remove("open");
+  document.getElementById('lightbox').classList.remove('open');
+  document.body.style.overflow = '';
 }
 
 function navLightbox(dir) {
-  const photos = photoData[currentCat] || [];
-  lightboxIndex = (lightboxIndex + dir + photos.length) % photos.length;
+  const photos = photoData[currentCategory.key];
+  currentIndex = (currentIndex + dir + photos.length) % photos.length;
   updateLightbox();
 }
 
 function updateLightbox() {
-  const photos = photoData[currentCat] || [];
-  const photo = photos[lightboxIndex];
-  document.getElementById("lightboxImg").src = photo.url;
-  document.getElementById("lightboxCaption").textContent = photo.name;
-  document.getElementById("lightboxCounter").textContent = `${lightboxIndex + 1} of ${photos.length}`;
-  const dlUrl = photo.url.replace("&raw=1", "&dl=1").replace("?raw=1", "?dl=1");
-  document.getElementById("lightboxDownload").href = dlUrl;
+  const photos = photoData[currentCategory.key];
+  const photo = photos[currentIndex];
+  document.getElementById('lightboxImg').src = photo.url;
+  document.getElementById('lightboxCaption').textContent = photo.name;
+  document.getElementById('lightboxCounter').textContent = `${currentIndex + 1} of ${photos.length}`;
+  // fl_attachment triggers browser Save As dialog
+  const dlUrl = photo.url.replace('/upload/', '/upload/fl_attachment/');
+  document.getElementById('lightboxDownload').href = dlUrl;
 }
 
-document.addEventListener("keydown", function(e) {
-  if (!document.getElementById("lightbox").classList.contains("open")) return;
-  if (e.key === "Escape") closeLightbox();
-  if (e.key === "ArrowLeft") navLightbox(-1);
-  if (e.key === "ArrowRight") navLightbox(1);
+// Keyboard navigation
+document.addEventListener('keydown', function(e) {
+  if (!document.getElementById('lightbox').classList.contains('open')) return;
+  if (e.key === 'Escape') closeLightbox();
+  if (e.key === 'ArrowLeft') navLightbox(-1);
+  if (e.key === 'ArrowRight') navLightbox(1);
 });
 
-document.getElementById("lightbox").addEventListener("click", function(e) {
+// Click outside image to close lightbox
+document.getElementById('lightbox').addEventListener('click', function(e) {
   if (e.target === this) closeLightbox();
 });
 
-// Touch swipe support for lightbox
-let touchStartX = 0;
-let touchEndX = 0;
-const lb = document.getElementById("lightbox");
-lb.addEventListener("touchstart", function(e) { touchStartX = e.changedTouches[0].screenX; }, {passive: true});
-lb.addEventListener("touchend", function(e) {
-  touchEndX = e.changedTouches[0].screenX;
-  const diff = touchStartX - touchEndX;
-  if (Math.abs(diff) > 50) { diff > 0 ? navLightbox(1) : navLightbox(-1); }
-});
+// Download entire folder as ZIP
+async function downloadFolder() {
+  if (!currentCategory) return;
+  const photos = photoData[currentCategory.key];
+  const btn = document.getElementById('folderDownloadBtn');
+  const progress = document.getElementById('zipProgress');
+  const barFill = document.getElementById('zipBarFill');
+  const zipText = document.getElementById('zipText');
+
+  btn.disabled = true;
+  btn.innerHTML = '&#8987; Preparing ZIP...';
+  progress.classList.add('active');
+
+  try {
+    const zip = new JSZip();
+    let completed = 0;
+
+    // Fetch all images in parallel (batches of 6 to avoid overwhelming)
+    const batchSize = 6;
+    for (let i = 0; i < photos.length; i += batchSize) {
+      const batch = photos.slice(i, i + batchSize);
+      const promises = batch.map(async (photo) => {
+        const response = await fetch(photo.url);
+        const blob = await response.blob();
+        zip.file(photo.name, blob);
+        completed++;
+        const pct = Math.round((completed / photos.length) * 100);
+        barFill.style.width = pct + '%';
+        zipText.textContent = pct + '%';
+      });
+      await Promise.all(promises);
+    }
+
+    zipText.textContent = 'Zipping...';
+    const content = await zip.generateAsync({ type: 'blob' });
+    const folderName = currentCategory.label.replace(/[^a-zA-Z0-9 -]/g, '').trim();
+    saveAs(content, folderName + '.zip');
+
+    btn.innerHTML = '&#10003; Download Complete';
+    zipText.textContent = 'Done!';
+    setTimeout(() => {
+      btn.disabled = false;
+      btn.innerHTML = '&#8595; Download All Photos';
+      progress.classList.remove('active');
+    }, 3000);
+  } catch (err) {
+    console.error('ZIP download failed:', err);
+    btn.disabled = false;
+    btn.innerHTML = '&#8595; Download All Photos';
+    progress.classList.remove('active');
+    alert('Download failed. Please try again.');
+  }
+}
 </script>
 </body>
 </html>
