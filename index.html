@@ -209,31 +209,31 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
   </div>
   <div class="photo-grid" style="grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));">
     
-    <div class="video-thumb" onclick="playVideo('1192460874', 'Aerial Skipperi boat shots')">
+    <div class="video-thumb" onclick="playVideo('1192460874', 'b3a4cf2017', 'Aerial Skipperi boat shots')">
       <img src="https://i.vimeocdn.com/video/2157721777-afc95f92738e8f3f2c75995597fdc133c28262829042f1a0e696c87d7435bbfd-d_640x360?&r=pad&region=us" alt="Aerial Skipperi boat shots" loading="lazy">
       <div class="video-play-icon"></div>
       <div class="video-duration">6:45</div>
       <div class="video-title">Aerial Skipperi boat shots</div>
     </div>
-    <div class="video-thumb" onclick="playVideo('1192458895', 'COASTGUARD vessel - Personnel and Boat engine')">
+    <div class="video-thumb" onclick="playVideo('1192458895', '1cac03b856', 'COASTGUARD vessel - Personnel and Boat engine')">
       <img src="https://i.vimeocdn.com/video/2157718325-44d558e3708d58c1bdce653b5561d9c52942e96ca295d151b954f489d29874eb-d_640x360?&r=pad&region=us" alt="COASTGUARD vessel - Personnel and Boat engine" loading="lazy">
       <div class="video-play-icon"></div>
       <div class="video-duration">2:08</div>
       <div class="video-title">COASTGUARD vessel - Personnel and Boat engine</div>
     </div>
-    <div class="video-thumb" onclick="playVideo('1192458055', 'Engines shots static')">
+    <div class="video-thumb" onclick="playVideo('1192458055', '251705e309', 'Engines shots static')">
       <img src="https://i.vimeocdn.com/video/2157717543-cde701ec192dc68c0051ec58a1095bcb9cca4e1560c8168cb1a9c1ccd41d7ca7-d_640x360?&r=pad&region=us" alt="Engines shots static" loading="lazy">
       <div class="video-play-icon"></div>
       <div class="video-duration">4:21</div>
       <div class="video-title">Engines shots static</div>
     </div>
-    <div class="video-thumb" onclick="playVideo('1192455727', 'boat shots with Skipperi')">
+    <div class="video-thumb" onclick="playVideo('1192455727', '17f05dec54', 'boat shots with Skipperi')">
       <img src="https://i.vimeocdn.com/video/2157715170-7f9891bccb6ced65a1e7575e4a378c03005de901730d0fa7aa95ee2566e4e797-d_640x360?&r=pad&region=us" alt="boat shots with Skipperi" loading="lazy">
       <div class="video-play-icon"></div>
       <div class="video-duration">6:58</div>
       <div class="video-title">boat shots with Skipperi</div>
     </div>
-    <div class="video-thumb" onclick="playVideo('1192453316', 'Course video shots - LANDSCAPE')">
+    <div class="video-thumb" onclick="playVideo('1192453316', '639371fb51', 'Course video shots - LANDSCAPE')">
       <img src="https://i.vimeocdn.com/video/2157711567-081f124889bca5ef32e191a3436279e1ccd2be6e6bc64df80f14d8113291c3c8-d_640x360?&r=pad&region=us" alt="Course video shots - LANDSCAPE" loading="lazy">
       <div class="video-play-icon"></div>
       <div class="video-duration">3:18</div>
@@ -764,9 +764,9 @@ function hideVideoGallery() {
   document.getElementById('mainGallery').classList.remove('hidden');
 }
 
-function playVideo(videoId, title) {
+function playVideo(videoId, hash, title) {
   var container = document.getElementById('videoPlayerContainer');
-  container.innerHTML = '<iframe src="https://player.vimeo.com/video/' + videoId + '?autoplay=1&title=0&byline=0&portrait=0" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe>';
+  container.innerHTML = '<iframe src="https://player.vimeo.com/video/' + videoId + '?h=' + hash + '&autoplay=1&title=0&byline=0&portrait=0" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe>';
   document.getElementById('videoModalTitle').textContent = title;
   document.getElementById('videoModal').classList.add('open');
 }
@@ -788,5 +788,4 @@ function closeVideoModal() {
 })();
 
 </script>
-</body>
-</html>
+<
