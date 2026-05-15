@@ -112,6 +112,34 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
   .lightbox img { max-width: 95vw; max-height: 70vh; }
   .lightbox-info { bottom: 12px; font-size: 12px; left: 10px; right: 10px; }
 }
+
+/* VIDEO CATEGORY & GRID */
+.video-thumb { aspect-ratio: 16/9; border-radius: 8px; overflow: hidden; cursor: pointer; position: relative; background: rgba(255,255,255,0.05); }
+.video-thumb img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s; }
+.video-thumb:hover img { transform: scale(1.05); }
+.video-play-icon { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 60px; height: 60px; background: rgba(0,0,0,0.7); border-radius: 50%; display: flex; align-items: center; justify-content: center; pointer-events: none; }
+.video-play-icon::after { content: ''; display: block; width: 0; height: 0; border-style: solid; border-width: 12px 0 12px 22px; border-color: transparent transparent transparent #fff; margin-left: 4px; }
+.video-duration { position: absolute; bottom: 8px; right: 8px; background: rgba(0,0,0,0.8); color: #fff; padding: 2px 8px; border-radius: 4px; font-size: 12px; font-weight: 600; }
+.video-title { font-size: 13px; color: rgba(255,255,255,0.8); margin-top: 8px; text-align: center; }
+.cat-card-videos .cat-thumb-grid { position: relative; }
+.cat-card-videos .cat-thumb-grid::after { content: ''; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 50px; height: 50px; background: rgba(0,0,0,0.6); border-radius: 50%; }
+.cat-card-videos .cat-thumb-grid::before { content: ''; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 0; height: 0; border-style: solid; border-width: 10px 0 10px 18px; border-color: transparent transparent transparent #fff; margin-left: 3px; z-index: 2; }
+
+/* VIDEO PLAYER MODAL */
+.video-modal { position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 1000; display: none; align-items: center; justify-content: center; flex-direction: column; }
+.video-modal.open { display: flex; }
+.video-modal-close { position: absolute; top: 16px; right: 20px; font-size: 28px; color: #fff; cursor: pointer; background: none; border: none; z-index: 1001; }
+.video-modal-content { width: 90vw; max-width: 960px; aspect-ratio: 16/9; }
+.video-modal-content iframe { width: 100%; height: 100%; border: none; border-radius: 8px; }
+.video-modal-title { color: rgba(255,255,255,0.8); font-size: 16px; margin-top: 16px; text-align: center; }
+
+@media (max-width: 600px) {
+  .video-play-icon { width: 44px; height: 44px; }
+  .video-play-icon::after { border-width: 8px 0 8px 16px; margin-left: 3px; }
+  .video-modal-close { top: 12px; right: 12px; font-size: 36px; padding: 8px; background: rgba(0,0,0,0.6); border-radius: 50%; width: 48px; height: 48px; display: flex; align-items: center; justify-content: center; }
+  .video-modal-content { width: 95vw; }
+}
+
 </style>
 </head>
 <body>
@@ -170,6 +198,59 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
   </div>
 </div>
 
+
+<!-- VIDEO GALLERY -->
+<div id="videoGallery" class="hidden">
+  <div class="gallery-bar">
+    <div style="display:flex;align-items:center;gap:12px;">
+      <button class="back-btn" onclick="hideVideoGallery()">&#8592; Back</button>
+      <h2>Videos (5)</h2>
+    </div>
+  </div>
+  <div class="photo-grid" style="grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));">
+    
+    <div class="video-thumb" onclick="playVideo('1192460874', 'Aerial Skipperi boat shots')">
+      <img src="https://i.vimeocdn.com/video/2157721777-afc95f92738e8f3f2c75995597fdc133c28262829042f1a0e696c87d7435bbfd-d_640x360?&r=pad&region=us" alt="Aerial Skipperi boat shots" loading="lazy">
+      <div class="video-play-icon"></div>
+      <div class="video-duration">6:45</div>
+      <div class="video-title">Aerial Skipperi boat shots</div>
+    </div>
+    <div class="video-thumb" onclick="playVideo('1192458895', 'COASTGUARD vessel - Personnel and Boat engine')">
+      <img src="https://i.vimeocdn.com/video/2157718325-44d558e3708d58c1bdce653b5561d9c52942e96ca295d151b954f489d29874eb-d_640x360?&r=pad&region=us" alt="COASTGUARD vessel - Personnel and Boat engine" loading="lazy">
+      <div class="video-play-icon"></div>
+      <div class="video-duration">2:08</div>
+      <div class="video-title">COASTGUARD vessel - Personnel and Boat engine</div>
+    </div>
+    <div class="video-thumb" onclick="playVideo('1192458055', 'Engines shots static')">
+      <img src="https://i.vimeocdn.com/video/2157717543-cde701ec192dc68c0051ec58a1095bcb9cca4e1560c8168cb1a9c1ccd41d7ca7-d_640x360?&r=pad&region=us" alt="Engines shots static" loading="lazy">
+      <div class="video-play-icon"></div>
+      <div class="video-duration">4:21</div>
+      <div class="video-title">Engines shots static</div>
+    </div>
+    <div class="video-thumb" onclick="playVideo('1192455727', 'boat shots with Skipperi')">
+      <img src="https://i.vimeocdn.com/video/2157715170-7f9891bccb6ced65a1e7575e4a378c03005de901730d0fa7aa95ee2566e4e797-d_640x360?&r=pad&region=us" alt="boat shots with Skipperi" loading="lazy">
+      <div class="video-play-icon"></div>
+      <div class="video-duration">6:58</div>
+      <div class="video-title">boat shots with Skipperi</div>
+    </div>
+    <div class="video-thumb" onclick="playVideo('1192453316', 'Course video shots - LANDSCAPE')">
+      <img src="https://i.vimeocdn.com/video/2157711567-081f124889bca5ef32e191a3436279e1ccd2be6e6bc64df80f14d8113291c3c8-d_640x360?&r=pad&region=us" alt="Course video shots - LANDSCAPE" loading="lazy">
+      <div class="video-play-icon"></div>
+      <div class="video-duration">3:18</div>
+      <div class="video-title">Course video shots - LANDSCAPE</div>
+    </div>
+  </div>
+</div>
+
+<!-- VIDEO PLAYER MODAL -->
+<div id="videoModal" class="video-modal">
+  <button class="video-modal-close" onclick="closeVideoModal()">&times;</button>
+  <div class="video-modal-content">
+    <div id="videoPlayerContainer"></div>
+  </div>
+  <div id="videoModalTitle" class="video-modal-title"></div>
+</div>
+
 <!-- LIGHTBOX -->
 <div id="lightbox" class="lightbox">
   <button class="lightbox-close" onclick="closeLightbox()">&#10005;</button>
@@ -183,8 +264,78 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
   </div>
 </div>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js">
+function showVideoGallery() {
+  document.getElementById('categories').classList.add('hidden');
+  document.getElementById('gallery').classList.add('hidden');
+  document.getElementById('videoGallery').classList.remove('hidden');
+}
+
+function hideVideoGallery() {
+  document.getElementById('videoGallery').classList.add('hidden');
+  document.getElementById('categories').classList.remove('hidden');
+}
+
+function playVideo(videoId, title) {
+  var container = document.getElementById('videoPlayerContainer');
+  container.innerHTML = '<iframe src="https://player.vimeo.com/video/' + videoId + '?autoplay=1&title=0&byline=0&portrait=0" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe>';
+  document.getElementById('videoModalTitle').textContent = title;
+  document.getElementById('videoModal').classList.add('open');
+}
+
+function closeVideoModal() {
+  document.getElementById('videoPlayerContainer').innerHTML = '';
+  document.getElementById('videoModal').classList.remove('open');
+}
+
+// Add Escape key handler for video modal
+(function() {
+  var origKeydown = document.onkeydown;
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape' && document.getElementById('videoModal').classList.contains('open')) {
+      closeVideoModal();
+      e.stopPropagation();
+    }
+  });
+})();
+
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js">
+function showVideoGallery() {
+  document.getElementById('categories').classList.add('hidden');
+  document.getElementById('gallery').classList.add('hidden');
+  document.getElementById('videoGallery').classList.remove('hidden');
+}
+
+function hideVideoGallery() {
+  document.getElementById('videoGallery').classList.add('hidden');
+  document.getElementById('categories').classList.remove('hidden');
+}
+
+function playVideo(videoId, title) {
+  var container = document.getElementById('videoPlayerContainer');
+  container.innerHTML = '<iframe src="https://player.vimeo.com/video/' + videoId + '?autoplay=1&title=0&byline=0&portrait=0" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe>';
+  document.getElementById('videoModalTitle').textContent = title;
+  document.getElementById('videoModal').classList.add('open');
+}
+
+function closeVideoModal() {
+  document.getElementById('videoPlayerContainer').innerHTML = '';
+  document.getElementById('videoModal').classList.remove('open');
+}
+
+// Add Escape key handler for video modal
+(function() {
+  var origKeydown = document.onkeydown;
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape' && document.getElementById('videoModal').classList.contains('open')) {
+      closeVideoModal();
+      e.stopPropagation();
+    }
+  });
+})();
+
+</script>
 <script>
 // Access code hash (SHA-256)
 const CODE_HASH = "84ddf86a17953e4eb66777ff786b58d162cc54c9db05e85fa82b332782502b37";
@@ -527,6 +678,20 @@ function renderCategories() {
     card.onclick = () => showCategory(cat);
     grid.appendChild(card);
   });
+
+  // Add Videos category card
+  const videoCard = document.createElement('div');
+  videoCard.className = 'cat-card cat-card-videos';
+  videoCard.innerHTML = `
+    <div class="cat-thumb-grid">
+      <img src="https://i.vimeocdn.com/video/2157721777-afc95f92738e8f3f2c75995597fdc133c28262829042f1a0e696c87d7435bbfd-d_640x360?&r=pad&region=us" alt="Aerial Skipperi boat shots" loading="lazy"> <img src="https://i.vimeocdn.com/video/2157718325-44d558e3708d58c1bdce653b5561d9c52942e96ca295d151b954f489d29874eb-d_640x360?&r=pad&region=us" alt="COASTGUARD vessel - Personnel and Boat engine" loading="lazy"> <img src="https://i.vimeocdn.com/video/2157717543-cde701ec192dc68c0051ec58a1095bcb9cca4e1560c8168cb1a9c1ccd41d7ca7-d_640x360?&r=pad&region=us" alt="Engines shots static" loading="lazy"> <img src="https://i.vimeocdn.com/video/2157715170-7f9891bccb6ced65a1e7575e4a378c03005de901730d0fa7aa95ee2566e4e797-d_640x360?&r=pad&region=us" alt="boat shots with Skipperi" loading="lazy">
+    </div>
+    <div class="cat-label">Videos</div>
+    <div class="cat-count">5 videos</div>
+  `;
+  videoCard.onclick = () => showVideoGallery();
+  grid.appendChild(videoCard);
+
 }
 
 function showCategory(cat) {
@@ -658,6 +823,41 @@ async function downloadFolder() {
     alert('Download failed. Please try again.');
   }
 }
+
+function showVideoGallery() {
+  document.getElementById('categories').classList.add('hidden');
+  document.getElementById('gallery').classList.add('hidden');
+  document.getElementById('videoGallery').classList.remove('hidden');
+}
+
+function hideVideoGallery() {
+  document.getElementById('videoGallery').classList.add('hidden');
+  document.getElementById('categories').classList.remove('hidden');
+}
+
+function playVideo(videoId, title) {
+  var container = document.getElementById('videoPlayerContainer');
+  container.innerHTML = '<iframe src="https://player.vimeo.com/video/' + videoId + '?autoplay=1&title=0&byline=0&portrait=0" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe>';
+  document.getElementById('videoModalTitle').textContent = title;
+  document.getElementById('videoModal').classList.add('open');
+}
+
+function closeVideoModal() {
+  document.getElementById('videoPlayerContainer').innerHTML = '';
+  document.getElementById('videoModal').classList.remove('open');
+}
+
+// Add Escape key handler for video modal
+(function() {
+  var origKeydown = document.onkeydown;
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape' && document.getElementById('videoModal').classList.contains('open')) {
+      closeVideoModal();
+      e.stopPropagation();
+    }
+  });
+})();
+
 </script>
 </body>
 </html>
