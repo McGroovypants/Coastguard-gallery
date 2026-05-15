@@ -264,78 +264,8 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
   </div>
 </div>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js">
-function showVideoGallery() {
-  document.getElementById('categories').classList.add('hidden');
-  document.getElementById('gallery').classList.add('hidden');
-  document.getElementById('videoGallery').classList.remove('hidden');
-}
-
-function hideVideoGallery() {
-  document.getElementById('videoGallery').classList.add('hidden');
-  document.getElementById('categories').classList.remove('hidden');
-}
-
-function playVideo(videoId, title) {
-  var container = document.getElementById('videoPlayerContainer');
-  container.innerHTML = '<iframe src="https://player.vimeo.com/video/' + videoId + '?autoplay=1&title=0&byline=0&portrait=0" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe>';
-  document.getElementById('videoModalTitle').textContent = title;
-  document.getElementById('videoModal').classList.add('open');
-}
-
-function closeVideoModal() {
-  document.getElementById('videoPlayerContainer').innerHTML = '';
-  document.getElementById('videoModal').classList.remove('open');
-}
-
-// Add Escape key handler for video modal
-(function() {
-  var origKeydown = document.onkeydown;
-  document.addEventListener('keydown', function(e) {
-    if (e.key === 'Escape' && document.getElementById('videoModal').classList.contains('open')) {
-      closeVideoModal();
-      e.stopPropagation();
-    }
-  });
-})();
-
-</script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js">
-function showVideoGallery() {
-  document.getElementById('categories').classList.add('hidden');
-  document.getElementById('gallery').classList.add('hidden');
-  document.getElementById('videoGallery').classList.remove('hidden');
-}
-
-function hideVideoGallery() {
-  document.getElementById('videoGallery').classList.add('hidden');
-  document.getElementById('categories').classList.remove('hidden');
-}
-
-function playVideo(videoId, title) {
-  var container = document.getElementById('videoPlayerContainer');
-  container.innerHTML = '<iframe src="https://player.vimeo.com/video/' + videoId + '?autoplay=1&title=0&byline=0&portrait=0" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe>';
-  document.getElementById('videoModalTitle').textContent = title;
-  document.getElementById('videoModal').classList.add('open');
-}
-
-function closeVideoModal() {
-  document.getElementById('videoPlayerContainer').innerHTML = '';
-  document.getElementById('videoModal').classList.remove('open');
-}
-
-// Add Escape key handler for video modal
-(function() {
-  var origKeydown = document.onkeydown;
-  document.addEventListener('keydown', function(e) {
-    if (e.key === 'Escape' && document.getElementById('videoModal').classList.contains('open')) {
-      closeVideoModal();
-      e.stopPropagation();
-    }
-  });
-})();
-
-</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
 <script>
 // Access code hash (SHA-256)
 const CODE_HASH = "84ddf86a17953e4eb66777ff786b58d162cc54c9db05e85fa82b332782502b37";
@@ -825,14 +755,13 @@ async function downloadFolder() {
 }
 
 function showVideoGallery() {
-  document.getElementById('categories').classList.add('hidden');
-  document.getElementById('gallery').classList.add('hidden');
+  document.getElementById('mainGallery').classList.add('hidden');
   document.getElementById('videoGallery').classList.remove('hidden');
 }
 
 function hideVideoGallery() {
   document.getElementById('videoGallery').classList.add('hidden');
-  document.getElementById('categories').classList.remove('hidden');
+  document.getElementById('mainGallery').classList.remove('hidden');
 }
 
 function playVideo(videoId, title) {
