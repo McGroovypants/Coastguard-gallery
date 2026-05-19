@@ -141,6 +141,33 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
   .video-modal-content { width: 95vw; }
 }
 
+
+.video-download-btn {
+  position: absolute;
+  bottom: 40px;
+  right: 8px;
+  background: rgba(0,0,0,0.7);
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 6px 10px;
+  font-size: 13px;
+  cursor: pointer;
+  z-index: 3;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  transition: background 0.2s;
+}
+.video-download-btn:hover {
+  background: rgba(0,100,200,0.9);
+}
+.video-download-btn svg {
+  width: 16px;
+  height: 16px;
+  fill: currentColor;
+}
+
 </style>
 </head>
 <body>
@@ -214,54 +241,63 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
       <img src="https://i.vimeocdn.com/video/2157721777-afc95f92738e8f3f2c75995597fdc133c28262829042f1a0e696c87d7435bbfd-d_640x360?&r=pad&region=us" alt="Aerial Skipperi boat shots" loading="lazy">
       <div class="video-play-icon"></div>
       <div class="video-duration">6:45</div>
+      <button class="video-download-btn" onclick="downloadVideo('1192460874', event)" title="Download"><svg viewBox="0 0 24 24"><path d="M12 16l-5-5h3V4h4v7h3l-5 5zm-7 2h14v2H5v-2z"/></svg></button>
       <div class="video-title">Aerial Skipperi boat shots</div>
     </div>
     <div class="video-thumb" onclick="playVideo('1192458895', '1cac03b856', 'COASTGUARD vessel - Personnel and Boat engine')">
       <img src="https://i.vimeocdn.com/video/2157718325-44d558e3708d58c1bdce653b5561d9c52942e96ca295d151b954f489d29874eb-d_640x360?&r=pad&region=us" alt="COASTGUARD vessel - Personnel and Boat engine" loading="lazy">
       <div class="video-play-icon"></div>
       <div class="video-duration">2:08</div>
+      <button class="video-download-btn" onclick="downloadVideo('1192458895', event)" title="Download"><svg viewBox="0 0 24 24"><path d="M12 16l-5-5h3V4h4v7h3l-5 5zm-7 2h14v2H5v-2z"/></svg></button>
       <div class="video-title">COASTGUARD vessel - Personnel and Boat engine</div>
     </div>
     <div class="video-thumb" onclick="playVideo('1192458055', '251705e309', 'Engines shots static')">
       <img src="https://i.vimeocdn.com/video/2157717543-cde701ec192dc68c0051ec58a1095bcb9cca4e1560c8168cb1a9c1ccd41d7ca7-d_640x360?&r=pad&region=us" alt="Engines shots static" loading="lazy">
       <div class="video-play-icon"></div>
       <div class="video-duration">4:21</div>
+      <button class="video-download-btn" onclick="downloadVideo('1192458055', event)" title="Download"><svg viewBox="0 0 24 24"><path d="M12 16l-5-5h3V4h4v7h3l-5 5zm-7 2h14v2H5v-2z"/></svg></button>
       <div class="video-title">Engines shots static</div>
     </div>
     <div class="video-thumb" onclick="playVideo('1192455727', '17f05dec54', 'boat shots with Skipperi')">
       <img src="https://i.vimeocdn.com/video/2157715170-7f9891bccb6ced65a1e7575e4a378c03005de901730d0fa7aa95ee2566e4e797-d_640x360?&r=pad&region=us" alt="boat shots with Skipperi" loading="lazy">
       <div class="video-play-icon"></div>
       <div class="video-duration">6:58</div>
+      <button class="video-download-btn" onclick="downloadVideo('1192455727', event)" title="Download"><svg viewBox="0 0 24 24"><path d="M12 16l-5-5h3V4h4v7h3l-5 5zm-7 2h14v2H5v-2z"/></svg></button>
       <div class="video-title">boat shots with Skipperi</div>
     </div>
     <div class="video-thumb" onclick="playVideo('1192453316', '639371fb51', 'Course video shots - LANDSCAPE')">
       <img src="https://i.vimeocdn.com/video/2157711567-081f124889bca5ef32e191a3436279e1ccd2be6e6bc64df80f14d8113291c3c8-d_640x360?&r=pad&region=us" alt="Course video shots - LANDSCAPE" loading="lazy">
       <div class="video-play-icon"></div>
       <div class="video-duration">3:18</div>
+      <button class="video-download-btn" onclick="downloadVideo('1192453316', event)" title="Download"><svg viewBox="0 0 24 24"><path d="M12 16l-5-5h3V4h4v7h3l-5 5zm-7 2h14v2H5v-2z"/></svg></button>
       <div class="video-title">Course video shots - LANDSCAPE</div>
     </div>
     <div class="video-thumb" onclick="playVideo('1193717118', '4566554a30', 'Basic engine parts')">
       <img src="https://i.vimeocdn.com/video/2159257366-0c829e80f06488b8e3486e1496dc3dd74029b9ec3d481061db3a89684c51cb38-d_640x360?&r=pad&region=us" alt="Basic engine parts" loading="lazy">
       <div class="video-play-icon"></div>
       <div class="video-duration">2:00</div>
+      <button class="video-download-btn" onclick="downloadVideo('1193717118', event)" title="Download"><svg viewBox="0 0 24 24"><path d="M12 16l-5-5h3V4h4v7h3l-5 5zm-7 2h14v2H5v-2z"/></svg></button>
       <div class="video-title">Basic engine parts</div>
     </div>
     <div class="video-thumb" onclick="playVideo('1193717117', 'f9e3d778f7', 'Four-stroke engine cycle')">
       <img src="https://i.vimeocdn.com/video/2159257369-a5cfec4525b79981771bad59156a3da9c3f0ef2bcce1db315d38e66065400d0e-d_640x360?&r=pad&region=us" alt="Four-stroke engine cycle" loading="lazy">
       <div class="video-play-icon"></div>
       <div class="video-duration">1:16</div>
+      <button class="video-download-btn" onclick="downloadVideo('1193717117', event)" title="Download"><svg viewBox="0 0 24 24"><path d="M12 16l-5-5h3V4h4v7h3l-5 5zm-7 2h14v2H5v-2z"/></svg></button>
       <div class="video-title">Four-stroke engine cycle</div>
     </div>
     <div class="video-thumb" onclick="playVideo('1193712928', '7a1598e5c9', 'Course Testimonials (with captions)')">
       <img src="https://i.vimeocdn.com/video/2159255730-004e56474652e5f46142341d44c2c0292291e3e76a43b3b6a53c8c917963cffe-d_640x360?&r=pad&region=us" alt="Course Testimonials (with captions)" loading="lazy">
       <div class="video-play-icon"></div>
       <div class="video-duration">3:48</div>
+      <button class="video-download-btn" onclick="downloadVideo('1193712928', event)" title="Download"><svg viewBox="0 0 24 24"><path d="M12 16l-5-5h3V4h4v7h3l-5 5zm-7 2h14v2H5v-2z"/></svg></button>
       <div class="video-title">Course Testimonials (with captions)</div>
     </div>
     <div class="video-thumb" onclick="playVideo('1193537698', '6507606879', 'Course Testimonials')">
       <img src="https://i.vimeocdn.com/video/2159256284-207c84bd90136abc7662a2d5b655706cd78647caeb71d85109426c6f90191413-d_640x360?&r=pad&region=us" alt="Course Testimonials" loading="lazy">
       <div class="video-play-icon"></div>
       <div class="video-duration">3:48</div>
+      <button class="video-download-btn" onclick="downloadVideo('1193537698', event)" title="Download"><svg viewBox="0 0 24 24"><path d="M12 16l-5-5h3V4h4v7h3l-5 5zm-7 2h14v2H5v-2z"/></svg></button>
       <div class="video-title">Course Testimonials</div>
     </div>
   </div>
@@ -797,9 +833,15 @@ function hideVideoGallery() {
   document.getElementById('mainGallery').classList.remove('hidden');
 }
 
+
+function downloadVideo(videoId, e) {
+  e.stopPropagation();
+  window.open('/.netlify/functions/vimeo-download?id=' + videoId, '_blank');
+}
+
 function playVideo(videoId, hash, title) {
   var container = document.getElementById('videoPlayerContainer');
-  container.innerHTML = '<iframe src="https://player.vimeo.com/video/' + videoId + '?h=' + hash + '&autoplay=1&title=0&byline=0&portrait=0" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe>';
+  container.innerHTML = '<iframe src="https://player.vimeo.com/video/' + videoId + '?h=' + hash + '&quality=720p&autoplay=1&title=0&byline=0&portrait=0" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe>';
   document.getElementById('videoModalTitle').textContent = title;
   document.getElementById('videoModal').classList.add('open');
 }
