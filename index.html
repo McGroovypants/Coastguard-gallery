@@ -115,6 +115,7 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
 
 /* VIDEO CATEGORY & GRID */
 .video-thumb { aspect-ratio: 16/9; border-radius: 8px; overflow: hidden; cursor: pointer; position: relative; background: rgba(255,255,255,0.05); }
+.video-thumb.square { aspect-ratio: 1/1; }
 .video-thumb img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s; }
 .video-thumb:hover img { transform: scale(1.05); }
 .video-play-icon { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 60px; height: 60px; background: rgba(0,0,0,0.7); border-radius: 50%; display: flex; align-items: center; justify-content: center; pointer-events: none; }
@@ -130,6 +131,7 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
 .video-modal.open { display: flex; }
 .video-modal-close { position: absolute; top: 16px; right: 20px; font-size: 28px; color: #fff; cursor: pointer; background: none; border: none; z-index: 1001; }
 .video-modal-content { width: 90vw; max-width: 1400px; aspect-ratio: 16/9; }
+.video-modal-content.square { aspect-ratio: 1/1; max-width: 80vh; }
 #videoPlayerContainer { width: 100%; height: 100%; }
 .video-modal-content iframe { width: 100%; height: 100%; border: none; border-radius: 8px; }
 .video-modal-title { color: rgba(255,255,255,0.8); font-size: 16px; margin-top: 16px; text-align: center; }
@@ -299,6 +301,13 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
       <div class="video-duration">3:48</div>
       <button class="video-download-btn" onclick="downloadVideo('1193537698', event)" title="Download"><svg viewBox="0 0 24 24"><path d="M12 16l-5-5h3V4h4v7h3l-5 5zm-7 2h14v2H5v-2z"/></svg></button>
       <div class="video-title">Course Testimonials</div>
+    </div>
+    <div class="video-thumb square" onclick="playVideo('1194571111', 'f6d5b73b69', 'Coastguard Testimonials - Instagram (Square)')">
+      <img src="https://i.vimeocdn.com/video/2160255408-83c71426e2ecfc3cf750e39f03ee08066258bac8efd9eef88f7bf0cf747fe9b6-d_640x360?&r=pad&region=us" alt="Coastguard Testimonials - Instagram (Square)" loading="lazy">
+      <div class="video-play-icon"></div>
+      <div class="video-duration">3:49</div>
+      <button class="video-download-btn" onclick="downloadVideo('1194571111', event)" title="Download"><svg viewBox="0 0 24 24"><path d="M12 16l-5-5h3V4h4v7h3l-5 5zm-7 2h14v2H5v-2z"/></svg></button>
+      <div class="video-title">Coastguard Testimonials - Instagram (Square)</div>
     </div>
   </div>
 </div>
@@ -686,7 +695,7 @@ function renderCategories() {
       <img src="https://i.vimeocdn.com/video/2157721777-afc95f92738e8f3f2c75995597fdc133c28262829042f1a0e696c87d7435bbfd-d_640x360?&r=pad&region=us" alt="Aerial Skipperi boat shots" loading="lazy"> <img src="https://i.vimeocdn.com/video/2157718325-44d558e3708d58c1bdce653b5561d9c52942e96ca295d151b954f489d29874eb-d_640x360?&r=pad&region=us" alt="COASTGUARD vessel - Personnel and Boat engine" loading="lazy"> <img src="https://i.vimeocdn.com/video/2157717543-cde701ec192dc68c0051ec58a1095bcb9cca4e1560c8168cb1a9c1ccd41d7ca7-d_640x360?&r=pad&region=us" alt="Engines shots static" loading="lazy"> <img src="https://i.vimeocdn.com/video/2157715170-7f9891bccb6ced65a1e7575e4a378c03005de901730d0fa7aa95ee2566e4e797-d_640x360?&r=pad&region=us" alt="boat shots with Skipperi" loading="lazy">
     </div>
     <div class="cat-label">Videos</div>
-    <div class="cat-count">9 videos</div>
+    <div class="cat-count">10 videos</div>
   `;
   videoCard.onclick = () => showVideoGallery();
   grid.appendChild(videoCard);
@@ -839,8 +848,11 @@ function downloadVideo(videoId, e) {
   window.open('/.netlify/functions/vimeo-download?id=' + videoId, '_blank');
 }
 
+var squareVideos = ['1194571111'];
 function playVideo(videoId, hash, title) {
   var container = document.getElementById('videoPlayerContainer');
+  var modalContent = document.querySelector('.video-modal-content');
+  modalContent.classList.toggle('square', squareVideos.indexOf(videoId) !== -1);
   container.innerHTML = '<iframe src="https://player.vimeo.com/video/' + videoId + '?h=' + hash + '&quality=720p&autoplay=1&title=0&byline=0&portrait=0" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe>';
   document.getElementById('videoModalTitle').textContent = title;
   document.getElementById('videoModal').classList.add('open');
