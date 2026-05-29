@@ -605,6 +605,14 @@ async function tryLogin() {
   const input = document.getElementById('accessCode').value.trim();
   const hash = await sha256(input);
   if (hash === CODE_HASH) {
+    // Code is correct - offer to save with biometrics if available and not yet registered
+    if (isWebAuthnAvailable() && !getStoredCredential()) {
+      const wantBiometric = confirm('Access granted! Would you like to save this with Face ID / Touch ID for next time?');
+      if (wantBiometric) {
+        await registerBiometric();
+        return; // registerBiometric handles the login redirect on success
+      }
+    }
     document.getElementById('loginScreen').classList.add('hidden');
     document.getElementById('mainGallery').classList.remove('hidden');
     renderCategories();
@@ -1124,6 +1132,29 @@ function generateChallenge() {
 
 async function registerBiometric() {
   const statusEl = document.getElementById('biometricStatus');
+  
+  // Require access code before allowing passkey registration
+  const codeInput = document.getElementById('accessCode');
+  const enteredCode = (codeInput ? codeInput.value : '').trim();
+  if (!enteredCode) {
+    statusEl.textContent = 'Enter the access code first, then tap here to save it';
+    setTimeout(() => { statusEl.textContent = ''; }, 4000);
+    return;
+  }
+  
+  // Validate the access code (same SHA-256 check as tryLogin)
+  const encoder = new TextEncoder();
+  const data = encoder.encode(enteredCode.toUpperCase());
+  const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+  const hashArray = Array.from(new Uint8Array(hashBuffer));
+  const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+  
+  if (hashHex !== CODE_HASH) {
+    statusEl.textContent = 'Incorrect code — enter the right access code first';
+    setTimeout(() => { statusEl.textContent = ''; }, 4000);
+    return;
+  }
+  
   statusEl.textContent = 'Setting up biometric...';
   
   try {
