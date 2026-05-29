@@ -121,7 +121,8 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
 .video-play-icon { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 60px; height: 60px; background: rgba(0,0,0,0.7); border-radius: 50%; display: flex; align-items: center; justify-content: center; pointer-events: none; }
 .video-play-icon::after { content: ''; display: block; width: 0; height: 0; border-style: solid; border-width: 12px 0 12px 22px; border-color: transparent transparent transparent #fff; margin-left: 4px; }
 .video-duration { position: absolute; bottom: 8px; right: 8px; background: rgba(0,0,0,0.8); color: #fff; padding: 2px 8px; border-radius: 4px; font-size: 12px; font-weight: 600; }
-.video-title { font-size: 13px; color: rgba(255,255,255,0.8); margin-top: 8px; text-align: center; }
+.video-card-wrapper { display: flex; flex-direction: column; }
+.video-title { font-size: 12px; color: rgba(255,255,255,0.7); margin-top: 6px; text-align: center; line-height: 1.3; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
 .cat-card-videos .cat-thumb-grid { position: relative; }
 .cat-card-videos .cat-thumb-grid::after { content: ''; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 50px; height: 50px; background: rgba(0,0,0,0.6); border-radius: 50%; }
 .cat-card-videos .cat-thumb-grid::before { content: ''; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 0; height: 0; border-style: solid; border-width: 10px 0 10px 18px; border-color: transparent transparent transparent #fff; margin-left: 3px; z-index: 2; }
@@ -900,6 +901,8 @@ function renderVideoTree(node, container, depth) {
     grid.style.cssText = 'grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));';
     
     node.videos.forEach(function(video) {
+      var wrapper = document.createElement('div');
+      wrapper.className = 'video-card-wrapper';
       var card = document.createElement('div');
       card.className = 'video-thumb' + (video.isSquare ? ' square-video' : '');
       card.onclick = function() { playVideo(video.id, video.embedHash, video.name, video.isSquare); };
@@ -909,10 +912,13 @@ function renderVideoTree(node, container, depth) {
         '<div class="video-play-icon"></div>' +
         '<div class="video-duration">' + video.durationFormatted + '</div>' +
         '<button class="video-download-btn" onclick="downloadVideo(\'' + video.id + '\', event)" title="Download">' +
-        '<svg viewBox="0 0 24 24"><path d="M12 16l-5-5h3V4h4v7h3l-5 5zm-7 2h14v2H5v-2z"/></svg></button>' +
-        '<div class="video-title">' + escapeHtml(video.name) + '</div>';
-      
-      grid.appendChild(card);
+        '<svg viewBox="0 0 24 24"><path d="M12 16l-5-5h3V4h4v7h3l-5 5zm-7 2h14v2H5v-2z"/></svg></button>';
+      var titleEl = document.createElement('div');
+      titleEl.className = 'video-title';
+      titleEl.textContent = video.name;
+      wrapper.appendChild(card);
+      wrapper.appendChild(titleEl);
+      grid.appendChild(wrapper);
     });
     
     container.appendChild(grid);
