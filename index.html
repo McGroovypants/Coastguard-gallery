@@ -726,7 +726,9 @@ function navLightbox(dir) {
 function updateLightbox() {
   const photos = photoData[currentCategory.key];
   const photo = photos[currentIndex];
-  document.getElementById('lightboxImg').src = photo.url;
+  // Compressed version for fast viewing; download stays full-res
+  const viewUrl = photo.url.replace('/upload/', '/upload/w_1920,q_auto,f_auto/');
+  document.getElementById('lightboxImg').src = viewUrl;
   document.getElementById('lightboxCaption').textContent = photo.name;
   document.getElementById('lightboxCounter').textContent = `${currentIndex + 1} of ${photos.length}`;
   // fl_attachment triggers browser Save As dialog
