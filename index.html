@@ -734,6 +734,7 @@ function updateLightbox() {
   // fl_attachment triggers browser Save As dialog
   const dlUrl = photo.url.replace('/upload/', '/upload/fl_attachment/');
   document.getElementById('lightboxDownload').href = dlUrl;
+  document.getElementById('lightboxDownload').download = photo.name;
   // Preload adjacent photos for instant flicking
   [currentIndex - 1, currentIndex + 1].forEach(idx => {
     const wrapped = (idx + photos.length) % photos.length;
