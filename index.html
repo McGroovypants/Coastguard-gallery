@@ -734,6 +734,14 @@ function updateLightbox() {
   // fl_attachment triggers browser Save As dialog
   const dlUrl = photo.url.replace('/upload/', '/upload/fl_attachment/');
   document.getElementById('lightboxDownload').href = dlUrl;
+  // Preload adjacent photos for instant flicking
+  [currentIndex - 1, currentIndex + 1].forEach(idx => {
+    const wrapped = (idx + photos.length) % photos.length;
+    if (wrapped !== currentIndex) {
+      const img = new Image();
+      img.src = photos[wrapped].url.replace('/upload/', '/upload/w_1920,q_auto,f_auto/');
+    }
+  });
 }
 
 // Keyboard navigation
