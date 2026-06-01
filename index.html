@@ -731,8 +731,9 @@ function updateLightbox() {
   document.getElementById('lightboxImg').src = viewUrl;
   document.getElementById('lightboxCaption').textContent = photo.name;
   document.getElementById('lightboxCounter').textContent = `${currentIndex + 1} of ${photos.length}`;
-  // fl_attachment triggers browser Save As dialog
-  const dlUrl = photo.url.replace('/upload/', '/upload/fl_attachment/');
+  // fl_attachment:name triggers browser Save As with custom filename
+  const safeName = encodeURIComponent(photo.name.replace(/\.[^.]+$/, ''));
+  const dlUrl = photo.url.replace('/upload/', '/upload/fl_attachment:' + safeName + '/');
   document.getElementById('lightboxDownload').href = dlUrl;
   // Preload adjacent photos for instant flicking
   [currentIndex - 1, currentIndex + 1].forEach(idx => {
