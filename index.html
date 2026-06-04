@@ -54,6 +54,10 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
 .gallery-bar h2 { font-size: 20px; font-weight: 600; }
 .back-btn, .download-btn { padding: 8px 16px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.2); background: transparent; color: #fff; font-size: 13px; cursor: pointer; text-decoration: none; transition: all 0.2s; display: inline-flex; align-items: center; gap: 6px; }
 .back-btn:hover { background: rgba(255,255,255,0.1); }
+.gate-remember { display: flex; align-items: center; gap: 8px; font-size: 0.8rem; color: rgba(255,255,255,0.55); cursor: pointer; margin-top: 8px; justify-content: center; }
+.gate-remember input[type="checkbox"] { accent-color: #f04123; width: 16px; height: 16px; cursor: pointer; }
+.logout-btn { position: absolute; top: 16px; right: 16px; padding: 6px 14px; border-radius: 6px; border: 1px solid rgba(255,255,255,0.15); background: transparent; color: rgba(255,255,255,0.45); font-size: 12px; cursor: pointer; transition: all 0.2s; }
+.logout-btn:hover { background: rgba(255,255,255,0.08); color: rgba(255,255,255,0.7); }
 .download-btn { background: #e63329; border-color: #e63329; }
 .download-btn:hover { background: #c42a22; }
 .download-btn:disabled { opacity: 0.6; cursor: not-allowed; }
@@ -188,6 +192,9 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
     <label for="accessCode">Access Code</label>
     <input type="text" id="accessCode" autocomplete="off" spellcheck="false">
     <button onclick="tryLogin()">Enter Gallery</button>
+    <label class="gate-remember">
+      <input type="checkbox" id="rememberDevice"> Remember this device
+    </label>
     <div id="loginError" class="login-error">Incorrect access code. Please try again.</div>
     <div id="biometricSection" style="margin-top: 20px; text-align: center;">
       <button id="biometricBtn" onclick="handleBiometric()" style="
@@ -220,6 +227,7 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
       <div class="header-title">Coastguard 2026</div>
       <div class="credit">Photos by Andy McGrath</div>
     </div>
+    <button class="logout-btn" onclick="forgetDevice()">Log Out</button>
   </div>
   <div class="container">
     <div id="categoryView">
@@ -258,6 +266,7 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
       <div class="header-title">Coastguard 2026</div>
       <div class="credit">Photos by Andy McGrath</div>
     </div>
+    <button class="logout-btn" onclick="forgetDevice()">Log Out</button>
   </div>
   <div class="gallery-bar">
     <div style="display:flex;align-items:center;gap:12px;">
@@ -613,6 +622,38 @@ async function sha256(message) {
   return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
 }
 
+// === Remember This Device ===
+const REMEMBER_KEY = 'cg_remembered';
+
+function rememberDevice() {
+  localStorage.setItem(REMEMBER_KEY, JSON.stringify({ hash: CODE_HASH, ts: Date.now() }));
+}
+
+function forgetDevice() {
+  localStorage.removeItem(REMEMBER_KEY);
+  // Also clear any WebAuthn stored credential
+  localStorage.removeItem('cg_credential');
+  // Return to login screen
+  document.getElementById('mainGallery').classList.add('hidden');
+  document.getElementById('videoGallery').classList.add('hidden');
+  document.getElementById('loginScreen').classList.remove('hidden');
+}
+
+function isDeviceRemembered() {
+  try {
+    const data = JSON.parse(localStorage.getItem(REMEMBER_KEY));
+    return data && data.hash === CODE_HASH;
+  } catch (e) {
+    return false;
+  }
+}
+
+function shouldRemember() {
+  const cb = document.getElementById('rememberDevice');
+  return cb && cb.checked;
+}
+// === End Remember This Device ===
+
 async function tryLogin() {
   const input = document.getElementById('accessCode').value.trim();
   const hash = await sha256(input);
@@ -625,6 +666,7 @@ async function tryLogin() {
         return; // registerBiometric handles the login redirect on success
       }
     }
+    if (shouldRemember()) rememberDevice();
     document.getElementById('loginScreen').classList.add('hidden');
     document.getElementById('mainGallery').classList.remove('hidden');
     renderCategories();
@@ -1221,6 +1263,7 @@ async function registerBiometric() {
     statusEl.textContent = 'Biometric registered! Logging in...';
     
     // Successful registration = successful auth, go to gallery
+    if (shouldRemember()) rememberDevice();
     setTimeout(() => {
       document.getElementById('loginScreen').classList.add('hidden');
       document.getElementById('mainGallery').classList.remove('hidden');
@@ -1263,6 +1306,7 @@ async function authenticateBiometric() {
     const assertion = await navigator.credentials.get(getOptions);
     
     statusEl.textContent = 'Verified! Logging in...';
+    if (shouldRemember()) rememberDevice();
     
     setTimeout(() => {
       document.getElementById('loginScreen').classList.add('hidden');
@@ -1298,6 +1342,13 @@ async function handleBiometric() {
 
 // On page load, check if biometric is available and update button visibility
 document.addEventListener('DOMContentLoaded', function() {
+  // Auto-login if device is remembered
+  if (isDeviceRemembered()) {
+    document.getElementById('loginScreen').classList.add('hidden');
+    document.getElementById('mainGallery').classList.remove('hidden');
+    renderCategories();
+    return;
+  }
   if (!isWebAuthnAvailable()) {
     const biometricSection = document.getElementById('biometricSection');
     if (biometricSection) biometricSection.style.display = 'none';
